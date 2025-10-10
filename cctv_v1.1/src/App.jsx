@@ -1,4 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useState } from "react";
+
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 
@@ -9,32 +11,61 @@ import Addproduct from "./page/Addproduct";
 import ProductList from "./page/ProductList";
 import UserManagement from "./page/UserManagement";
 
-function App() {
+// Layout for Dashboard & other pages with Sidebar
+function ProtectedLayout({ isOpen, setIsOpen }) {
   return (
-    
-    <Router>
-    <div className="flex h-screen">
-    {/* Sidebar can stay fixed if you want */}
-    <Sidebar />
-    <div className="flex flex-col flex-1">
-    <Navbar />
-    {/* Main content area */}
-    <div className="overflow-y-auto flex-1 bg-gray-50">
-    
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/addproduct" element={<Addproduct />} />
-      <Route path="/productlist" element={<ProductList />} />
-      <Route path="/usermanagement" element={<UserManagement />} />
-    </Routes>
-    
+    <div className="flex">
+      {/* Sidebar */}
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+      {/* Main content */}
+      <div
+        className={`transition-all duration-300 ease-in-out flex-1 min-h-screen bg-gray-50 
+          ${isOpen ? "md:ml-[22%]" : "md:ml-[9%]"}
+        `}
+      >
+        <div className="p-4 md:p-6">
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/addproduct" element={<Addproduct />} />
+            <Route path="/productlist" element={<ProductList />} />
+            <Route path="/usermanagement" element={<UserManagement />} />
+          </Routes>
+        </div>
+      </div>
     </div>
-    </div>
-    </div>
-    </Router>
   );
 }
 
-export default App;
+// Main App wrapper
+function AppWrapper() {
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(true);
+
+  // Show Navbar ONLY on login & register
+  const showNavbar = location.pathname === "/login" || location.pathname === "/register";
+
+  return (
+    <>
+      {showNavbar && <Navbar />}
+
+      <Routes>
+        {/* Auth pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* All other pages go to protected layout */}
+        <Route path="/*" element={<ProtectedLayout isOpen={isOpen} setIsOpen={setIsOpen} />} />
+      </Routes>
+    </>
+  );
+}
+
+// Root component
+export default function App() {
+  return (
+    <Router>
+      <AppWrapper />
+    </Router>
+  );
+}
