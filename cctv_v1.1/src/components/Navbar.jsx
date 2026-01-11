@@ -4,7 +4,7 @@ function Navbar() {
   const location = useLocation();
 
   return (
-    <div className="bg-gradient-to-r from-white to-[#012471] flex justify-between items-center px-8 py-5">
+    <div className="bg-gradient-to-r from-white to-[#012471] flex justify-between shadow-2xl items-center px-8 py-5">
       <div className="flex items-center space-x-2">
         <img className="w-14 h-11" src="src/assets/camera.gif" alt="CCTV" />
         <h1 className="text-3xl font-bold text-blue-900">CCTV Manage</h1>

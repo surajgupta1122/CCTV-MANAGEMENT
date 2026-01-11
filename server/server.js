@@ -1,39 +1,40 @@
 import express from "express";
-import router from "./src/routes/router.js";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import connectDB from "./src/config/db.js";
+import protectedRoutes from "./src/routes/protectedRoutes.js";
 
-dotenv.config();
+import authRoutes from "./src/routes/authRoutes.js";
+import dashboardRoutes from "./src/routes/dashboardRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
+import productRoutes from "./src/routes/productRoutes.js";
+
+dotenv.config(); // MUST be before using process.env
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Root route (optional)
-app.get("/", (req, res) => {
-  res.send("Backend is running successfully 🚀");
-});
+app.use("/api", authRoutes);
+app.use("/api", protectedRoutes);
+app.use("/api", dashboardRoutes);
+app.use("/api", userRoutes);
+app.use("/api", productRoutes);
 
-// Data route
-app.use("/api", router);
 
-// Connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/cctv_db";
+// Start server after DB connection
 
-mongoose
-  .connect(MONGO_URI, {
-    // options can be left empty for modern mongoose
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
+const startServer = async () => {
+  try {
+    await connectDB(); // ⬅ wait for DB
     app.listen(PORT, () => {
-      console.log(`Backend is running successfully 🚀 on port ${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
-  })
-  .catch((err) => {
-    console.error("Failed to connect to MongoDB:", err.message);
-  });
+  } catch (error) {
+    console.error("Server failed to start:", error.message);
+  }
+};
+
+startServer();
