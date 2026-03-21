@@ -144,7 +144,7 @@ function Dashboard() {
       </div>
 
       {user && (
-        <div className="bg-green-100 p-3 rounded-lg">
+        <div className="bg-blue-100 p-3 rounded-lg">
           👤 Logged in as: {user.email || user.id}
         </div>
       )}
