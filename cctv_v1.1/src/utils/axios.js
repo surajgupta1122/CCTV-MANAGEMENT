@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://cctv-management-4v69.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
