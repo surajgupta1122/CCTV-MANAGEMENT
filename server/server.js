@@ -23,6 +23,10 @@ app.use("/api", dashboardRoutes);
 app.use("/api", userRoutes);
 app.use("/api", productRoutes);
 
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
 
 // Start server after DB connection
 
