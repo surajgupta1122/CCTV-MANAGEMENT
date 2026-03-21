@@ -38,7 +38,8 @@ const login = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-        role: user.role, // 👈 IMPORTANT
+        email: user.email,
+        role: user.role, 
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -51,7 +52,7 @@ const login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role, // 👈 SEND ROLE TO FRONTEND
+        role: user.role, 
       },
     });
   } catch (error) {

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "../utils/axios";
+import axiosInstance from "../utils/axios";
 
 function Dashboard() {
-
   const [stats, setStats] = useState({
     totalProducts: 0,
     inventoryValue: 0,
@@ -13,6 +12,7 @@ function Dashboard() {
 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   //  message
   const [message, setMessage] = useState("");
@@ -26,17 +26,14 @@ function Dashboard() {
     try {
       setLoading(true);
 
-      const res = await axios.get("/dashboard-stats", {
+      const res = await axiosInstance.get("/dashboard-stats", {
         params: { t: Date.now() }, // cache buster
       });
 
       setStats(res.data);
 
       // 👇 after-load message
-      showMessage(
-        fromRefresh ? "✔ Dashboard refreshed" : "✔ Dashboard loaded"
-      );
-
+      showMessage(fromRefresh ? "✔ Dashboard refreshed" : "✔ Dashboard loaded");
     } catch (error) {
       showMessage("✖ Failed to load dashboard");
     } finally {
@@ -46,16 +43,28 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDashboard();
+    testProtected();
   }, []);
 
-  const filteredProducts = stats.todaysNew.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.category.toLowerCase().includes(search.toLowerCase())
+  const testProtected = async () => {
+    try {
+      const res = await axiosInstance.get("/dashboard");
+      console.log(res.data);
+
+      setUser(res.data.user);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const filteredProducts = stats.todaysNew.filter(
+    (item) =>
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.category.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div className="bg-gray-50 min-h-screen space-y-6">
-
       {/* Header */}
       <div className="flex justify-between items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-800 px-1 py-2 mb-3">
@@ -88,27 +97,35 @@ function Dashboard() {
 
       {/* 🎮 message */}
       {message && (
-      <div className="flex justify-end">
-        <div
-          className={`px-6 py-2 rounded-lg font-semibold shadow-lg text-white
+        <div className="flex justify-end">
+          <div
+            className={`px-6 py-2 rounded-lg font-semibold shadow-lg text-white
            ${message.startsWith("✖") ? "bg-red-600" : "bg-green-600"}
           `}
-        >
-        {message}
+          >
+            {message}
+          </div>
         </div>
-      </div>
       )}
 
       {/* Stats Section */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: "Total Products", value: stats.totalProducts, icon: "boxes.png" },
+          {
+            label: "Total Products",
+            value: stats.totalProducts,
+            icon: "boxes.png",
+          },
           {
             label: "Inventory Value",
             value: `₹${stats.inventoryValue.toLocaleString()}`,
             icon: "bar-chart.png",
           },
-          { label: "Today's New", value: stats.todaysNewCount, icon: "quality-control.png" },
+          {
+            label: "Today's New",
+            value: stats.todaysNewCount,
+            icon: "quality-control.png",
+          },
           { label: "Low Stock", value: stats.lowStock, icon: "attention.png" },
         ].map((item) => (
           <div
@@ -125,6 +142,12 @@ function Dashboard() {
           </div>
         ))}
       </div>
+
+      {user && (
+        <div className="bg-green-100 p-3 rounded-lg">
+          👤 Logged in as: {user.email || user.id}
+        </div>
+      )}
 
       {/* Table Section */}
       <div className="bg-white shadow-lg rounded-lg overflow-x-auto">
@@ -166,7 +189,6 @@ function Dashboard() {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }
