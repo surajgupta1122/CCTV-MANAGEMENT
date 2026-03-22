@@ -2,7 +2,11 @@ import Product from "../../models/Product.js";
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    // 🔐 FILTER BY LOGGED-IN USER
+    const products = await Product.find({
+      createdBy: req.user.id,
+    }).sort({ createdAt: -1 });
+
     res.status(200).json(products);
   } catch (error) {
     console.error("GET PRODUCTS ERROR:", error);
