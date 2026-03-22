@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 import filterIcon from "../assets/icons/filter.png";
-import editIcon from "../assets/icons/edit.png";
 import packingListIcon from "../assets/icons/packing-list.png";
 
 function ProductList() {
@@ -238,7 +237,6 @@ function ProductList() {
                       onClick={() => openEditModal(p)}
                       className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
-                      <img className="w-2 h-2" src={editIcon} />
                       Edit
                     </button>
                     <button
