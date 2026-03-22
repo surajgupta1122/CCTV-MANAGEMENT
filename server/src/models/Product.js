@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema(
     poe: { type: Boolean, default: false },
     nightVision: { type: Boolean, default: false },
     
-    // ✅ Important: Track who created this product
+    // ✅ Add this field
     createdBy: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: "User", 
