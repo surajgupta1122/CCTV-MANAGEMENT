@@ -1,20 +1,13 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedRoute = ({ adminOnly = false }) => {
+const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
 
-  // Not logged in
-  if (!token || !user) {
+  // ❌ No token → go login
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // Admin-only route
-  if (adminOnly && user.role !== "admin") {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // ✅ VERY IMPORTANT
   return <Outlet />;
 };
 

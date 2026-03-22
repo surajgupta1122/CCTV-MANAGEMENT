@@ -26,9 +26,11 @@ function Login() {
         password,
       });
 
-      // ✅ SAVE TOKEN + USER (IMPORTANT)
+      // ✅ SAVE ONLY TOKEN (SECURE)
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // ❌ REMOVE THIS (IMPORTANT SECURITY FIX)
+      // localStorage.setItem("user", JSON.stringify(res.data.user));
 
       // ✅ REDIRECT
       navigate("/dashboard");

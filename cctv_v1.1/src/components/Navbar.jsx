@@ -1,28 +1,24 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import camera from "/src/assets/camera.gif";
+import { getCurrentUser } from "../utils/auth";
 
 function Navbar() {
   const location = useLocation();
   const [user, setUser] = useState(null);
 
-  // ✅ Load user from localStorage
   useEffect(() => {
-  if (typeof window !== "undefined") {
-    try {
-      const storedUser = localStorage.getItem("user");
-      setUser(storedUser ? JSON.parse(storedUser) : null);
-    } catch (err) {
-      console.error("Error parsing user:", err);
-      setUser(null);
-    }
-  }
-}, []);
+    const loadUser = async () => {
+      const userData = await getCurrentUser();
+      setUser(userData);
+    };
+
+    loadUser();
+  }, []);
 
   // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
     window.location.href = "/login";
   };
 

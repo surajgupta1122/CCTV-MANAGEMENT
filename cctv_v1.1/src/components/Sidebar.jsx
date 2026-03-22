@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { getCurrentUser } from "../utils/auth";
 
 import camera from "../assets/camera.gif";
 import menuIcon from "../assets/icons/menu.png";
@@ -11,24 +12,24 @@ import logoutIcon from "../assets/icons/logout.png";
 function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
 
-  // ✅ Safe user state (fix crash)
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      setUser(stored ? JSON.parse(stored) : null);
-    } catch (err) {
-      console.error("User parse error:", err);
-      setUser(null);
-    }
+    const loadUser = async () => {
+      const userData = await getCurrentUser();
+      setUser(userData);
+      setLoading(false);
+    };
+
+    loadUser();
   }, []);
 
   const isAdmin = user?.role === "admin";
 
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
-  // ✅ Use imported icons (NO require)
+  // ✅ FIX: added icons back (IMPORTANT)
   const menuItems = [
     { name: "Dashboard", icon: menuIcon, path: "/dashboard" },
     { name: "Add Product", icon: addCartIcon, path: "/addproduct" },
@@ -47,10 +48,12 @@ function Sidebar({ isOpen, setIsOpen }) {
   // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
     navigate("/login");
     window.location.reload(); // ensure UI resets
   };
+
+  // ✅ Optional: prevent flicker before user loads
+  if (loading) return null;
 
   return (
     <>
