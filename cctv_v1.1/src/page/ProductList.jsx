@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 import filterIcon from "../assets/icons/filter.png";
-import packingListIcon from "../assets/icons/packing-list.png";
 import editIcon from "../assets/icons/edit.png";
+import packingListIcon from "../assets/icons/packing-list.png";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
