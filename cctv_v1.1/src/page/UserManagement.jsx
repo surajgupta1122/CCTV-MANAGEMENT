@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 import editIcon from "../assets/icons/edit.png";
-// import deleteIcon from "../assets/icons/trash.png";
+
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -157,7 +157,7 @@ function UserManagement() {
                       onClick={() => openDeleteModal(user._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-red-600 hover:shadow-md transition"
                     >
-                      <img src={deleteIcon} className="w-4 h-4" />
+                      
                       Delete
                     </button>
                   </td>

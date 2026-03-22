@@ -4,7 +4,6 @@ import refreshIcon from "../assets/icons/refresh.png";
 import filterIcon from "../assets/icons/filter.png";
 import packingListIcon from "../assets/icons/packing-list.png";
 import editIcon from "../assets/icons/edit.png";
-// import deleteIcon from "../assets/icons/trash.png";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
@@ -246,7 +245,6 @@ function ProductList() {
                       onClick={() => openDeleteModal(p._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
-                      <img src={deleteIcon} className="w-3 h-3" />
                       Delete
                     </button>
                   </td>
