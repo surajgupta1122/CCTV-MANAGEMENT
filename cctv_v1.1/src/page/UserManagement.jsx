@@ -143,11 +143,11 @@ function UserManagement() {
                   <td className="px-3 py-2">{user.email}</td>
                   <td className="px-3 py-2 flex gap-2">
                     <button
-                      src={editIcon}
                       className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                       onClick={() => openEditModal(user)}
                     >
                       Edit
+                      <img src={editIcon} alt="edit" className="w-5 h-5" />
                     </button>
                     <button
                       src={deleteIcon}
@@ -155,6 +155,7 @@ function UserManagement() {
                       onClick={() => openDeleteModal(user._id)}
                     >
                       Delete
+                      <img src={deleteIcon} alt="delete" className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
