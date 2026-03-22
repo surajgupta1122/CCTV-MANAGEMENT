@@ -1,5 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import camera from "../assets/camera.gif";
+import menuIcon from "../assets/icons/menu.png";
+import addCartIcon from "../assets/icons/add-cart.png";
+import userSettingIcon from "../assets/icons/user-setting.png";
+import packingListIcon from "../assets/icons/packing-list.png";
+import logoutIcon from "../assets/icons/logout.png";
 
 function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
@@ -9,12 +15,18 @@ function Sidebar({ isOpen, setIsOpen }) {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
   const menuItems = [
-    { name: "Dashboard", icon: "menu.png", path: "/dashboard" },
-    { name: "Add Product", icon: "add-cart.png", path: "/addproduct" },
+    { name: "Dashboard", icon: menuIcon, path: "/dashboard" },
+    { name: "Add Product", icon: addCartIcon, path: "/addproduct" },
     ...(isAdmin
-      ? [{ name: "User Management", icon: "user-setting.png", path: "/usermanagement" }]
+      ? [
+          {
+            name: "User Management",
+            icon: userSettingIcon,
+            path: "/usermanagement",
+          },
+        ]
       : []),
-    { name: "Product List", icon: "packing-list.png", path: "/productlist" },
+    { name: "Product List", icon: packingListIcon, path: "/productlist" },
   ];
 
   const handleLogout = () => {
@@ -33,7 +45,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-gray-300 p-4">
           <div className="flex items-center space-x-2">
-            <img src="src/assets/camera.gif" alt="CCTV" className="h-10 w-12" />
+            <img src={camera} alt="CCTV" className="h-10 w-12" />
             {isOpen && (
               <h1 className="text-2xl font-bold text-[#012471]">
                 CCTV Manager
@@ -70,13 +82,11 @@ function Sidebar({ isOpen, setIsOpen }) {
                   }`}
                 >
                   <img
-                    src={`src/assets/icons/${item.icon}`}
+                    src={require(`../assets/icons/${item.icon}`)}
                     alt={item.name}
                     className="w-9 h-9"
                   />
-                  {isOpen && (
-                    <span className="ml-4 text-xl">{item.name}</span>
-                  )}
+                  {isOpen && <span className="ml-4 text-xl">{item.name}</span>}
                 </div>
               </NavLink>
             </li>
@@ -88,11 +98,7 @@ function Sidebar({ isOpen, setIsOpen }) {
           className="rounded-t-xl cursor-pointer p-4 text-2xl font-bold text-red-600 border-t-2 border-gray-300 flex items-center justify-center gap-2 hover:bg-red-200 hover:scale-110 duration-300"
           onClick={() => setIsLogoutOpen(true)}
         >
-          <img
-            className="w-9 h-9"
-            src="src/assets/icons/logout.png"
-            alt="logout"
-          />
+          <img className="w-9 h-9" src={logoutIcon} alt="logout" />
           {isOpen && <span>Log out</span>}
         </button>
       </aside>
@@ -101,9 +107,7 @@ function Sidebar({ isOpen, setIsOpen }) {
       {isLogoutOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[380px]">
-            <h2 className="text-xl font-bold mb-3 text-red-600">
-              Log out
-            </h2>
+            <h2 className="text-xl font-bold mb-3 text-red-600">Log out</h2>
 
             <p className="text-gray-700 mb-6">
               Are you sure you want to log out?
