@@ -106,13 +106,27 @@ function ProductList() {
   // ---------------- EDIT ----------------
   const openEditModal = (product) => {
     setSelectedProduct(product);
-    setEditForm(product);
+    setEditForm({
+      name: product.name,
+      price: product.price,
+      quantity: product.quantity,
+      brand: product.brand,
+      category: product.category,
+      modelNumber: product.modelNumber,
+      resolution: product.resolution,
+      lens: product.lens,
+      poe: product.poe,
+      nightVision: product.nightVision
+    });
     setIsEditOpen(true);
   };
 
   const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditForm({ ...editForm, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setEditForm({ 
+      ...editForm, 
+      [name]: type === "checkbox" ? checked : value 
+    });
   };
 
   const handleUpdateProduct = async (e) => {
@@ -309,42 +323,162 @@ function ProductList() {
       {/* ✏️ EDIT PRODUCT MODAL */}
       {isEditOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[420px]">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-[500px] max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Edit Product</h2>
 
             <form onSubmit={handleUpdateProduct} className="space-y-4">
-              <input
-                type="text"
-                name="name"
-                value={editForm.name || ""}
-                onChange={handleEditChange}
-                className="border border-gray-300 rounded-lg p-2 w-full"
-                required
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Product Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={editForm.name || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  required
+                />
+              </div>
 
-              <input
-                type="number"
-                name="price"
-                value={editForm.price || ""}
-                onChange={handleEditChange}
-                className="border border-gray-300 rounded-lg p-2 w-full"
-                required
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Model Number
+                </label>
+                <input
+                  type="text"
+                  name="modelNumber"
+                  value={editForm.modelNumber || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
 
-              <input
-                type="number"
-                name="quantity"
-                value={editForm.quantity || ""}
-                onChange={handleEditChange}
-                className="border border-gray-300 rounded-lg p-2 w-full"
-                required
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Brand
+                </label>
+                <select
+                  name="brand"
+                  value={editForm.brand || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                >
+                  <option value="">Select Brand...</option>
+                  <option>Hikvision</option>
+                  <option>Dahua Technology</option>
+                  <option>CP Plus</option>
+                  <option>Other</option>
+                </select>
+              </div>
 
-              <div className="flex justify-end gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <select
+                  name="category"
+                  value={editForm.category || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                >
+                  <option value="">Select Category...</option>
+                  <option>Box Camera</option>
+                  <option>PTZ Camera</option>
+                  <option>Dome Camera</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={editForm.price || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={editForm.quantity || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Resolution
+                </label>
+                <select
+                  name="resolution"
+                  value={editForm.resolution || ""}
+                  onChange={handleEditChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                >
+                  <option value="">Select Resolution...</option>
+                  <option>1920×1080</option>
+                  <option>1440×900</option>
+                  <option>1366×768</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Lens
+                </label>
+                <input
+                  type="text"
+                  name="lens"
+                  value={editForm.lens || ""}
+                  onChange={handleEditChange}
+                  placeholder="eg., 2.8mm, varifocal"
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="poe"
+                    checked={editForm.poe || false}
+                    onChange={handleEditChange}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">Power over Ethernet (PoE)</span>
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="nightVision"
+                    checked={editForm.nightVision || false}
+                    onChange={handleEditChange}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">Night Vision</span>
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 border rounded-lg"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
@@ -353,7 +487,7 @@ function ProductList() {
                   type="submit"
                   className="bg-[#012471] text-white px-4 py-2 rounded-lg hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
                 >
-                  Save
+                  Save Changes
                 </button>
               </div>
             </form>
@@ -370,13 +504,13 @@ function ProductList() {
             </h2>
 
             <p className="text-gray-700 mb-6">
-              Are you sure you want to delete this product?
+              Are you sure you want to delete this product? This action cannot be undone.
             </p>
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsDeleteOpen(false)}
-                className="px-4 py-2 border rounded-lg"
+                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
                 Cancel
               </button>
