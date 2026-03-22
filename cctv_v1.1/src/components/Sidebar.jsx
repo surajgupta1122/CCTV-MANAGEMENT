@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import camera from "../assets/camera.gif";
 import menuIcon from "../assets/icons/menu.png";
 import addCartIcon from "../assets/icons/add-cart.png";
@@ -9,11 +10,25 @@ import logoutIcon from "../assets/icons/logout.png";
 
 function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+
+  // ✅ Safe user state (fix crash)
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      setUser(stored ? JSON.parse(stored) : null);
+    } catch (err) {
+      console.error("User parse error:", err);
+      setUser(null);
+    }
+  }, []);
+
   const isAdmin = user?.role === "admin";
 
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
+  // ✅ Use imported icons (NO require)
   const menuItems = [
     { name: "Dashboard", icon: menuIcon, path: "/dashboard" },
     { name: "Add Product", icon: addCartIcon, path: "/addproduct" },
@@ -29,18 +44,19 @@ function Sidebar({ isOpen, setIsOpen }) {
     { name: "Product List", icon: packingListIcon, path: "/productlist" },
   ];
 
+  // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
+    window.location.reload(); // ensure UI resets
   };
 
   return (
     <>
       <aside
         className={`fixed h-screen bg-white border-r-2 border-gray-300 flex flex-col duration-300 ease-in-out 
-          ${isOpen ? "w-[22%]" : "w-[9%]"} 
-        `}
+        ${isOpen ? "w-[22%]" : "w-[9%]"}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-gray-300 p-4">
@@ -82,11 +98,13 @@ function Sidebar({ isOpen, setIsOpen }) {
                   }`}
                 >
                   <img
-                    src={require(`../assets/icons/${item.icon}`)}
+                    src={item.icon}
                     alt={item.name}
                     className="w-9 h-9"
                   />
-                  {isOpen && <span className="ml-4 text-xl">{item.name}</span>}
+                  {isOpen && (
+                    <span className="ml-4 text-xl">{item.name}</span>
+                  )}
                 </div>
               </NavLink>
             </li>
