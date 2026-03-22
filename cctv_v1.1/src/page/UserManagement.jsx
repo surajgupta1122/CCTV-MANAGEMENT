@@ -97,7 +97,7 @@ function UserManagement() {
           onClick={fetchUsers}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img src={refreshIcon} className="w-5 h-5" />
+          <img className="w-5 h-5" src={refreshIcon}/>
           Refresh
         </button>
       </div>
