@@ -3,19 +3,12 @@ import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 import editIcon from "../assets/icons/edit.png";
 
-
 function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
-
-  const showMessage = (text, type = "success") => {
-    setMessage(text);
-    setMessageType(type);
-    setTimeout(() => setMessage(""), 1000);
-  };
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -24,6 +17,12 @@ function UserManagement() {
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
+
+  const showMessage = (text, type = "success") => {
+    setMessage(text);
+    setMessageType(type);
+    setTimeout(() => setMessage(""), 1000);
+  };
 
   // Fetch users
   const fetchUsers = async () => {
@@ -60,7 +59,10 @@ function UserManagement() {
         email: editEmail,
       });
 
-      setUsers(users.map((u) => (u._id === selectedUser._id ? res.data : u)));
+      setUsers(users.map((u) =>
+        u._id === selectedUser._id ? res.data : u
+      ));
+
       setIsEditOpen(false);
       showMessage("✔ User updated");
     } catch {
@@ -97,7 +99,7 @@ function UserManagement() {
           onClick={fetchUsers}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5" src={refreshIcon}/>
+          <img src={refreshIcon} className="w-5 h-5" />
           Refresh
         </button>
       </div>
@@ -105,13 +107,11 @@ function UserManagement() {
       {/* Message */}
       {message && (
         <div className="flex justify-end mb-3">
-          <div
-            className={`px-6 py-2 rounded-lg font-semibold shadow-lg ${
-              messageType === "success"
-                ? "bg-green-600 text-white"
-                : "bg-red-600 text-white"
-            }`}
-          >
+          <div className={`px-6 py-2 rounded-lg font-semibold shadow-lg ${
+            messageType === "success"
+              ? "bg-green-600 text-white"
+              : "bg-red-600 text-white"
+          }`}>
             {message}
           </div>
         </div>
@@ -141,23 +141,22 @@ function UserManagement() {
                   <td className="px-3 py-2">{user.name}</td>
                   <td className="px-3 py-2">{user.email}</td>
 
-                  {/* ✅ ACTION BUTTONS */}
+                  {/* ACTION */}
                   <td className="px-3 py-2 flex gap-2">
                     {/* Edit */}
                     <button
                       onClick={() => openEditModal(user)}
-                      className="bg-green-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-green-600 hover:shadow-md transition"
+                      className="bg-green-500 text-white px-3 py-1 rounded-lg flex items-center gap-2"
                     >
                       <img src={editIcon} className="w-4 h-4" />
                       Edit
                     </button>
 
-                    {/* Delete */}
+                    {/* Delete (NO ICON) */}
                     <button
                       onClick={() => openDeleteModal(user._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-red-600 hover:shadow-md transition"
+                      className="bg-red-500 text-white px-3 py-1 rounded-lg"
                     >
-                      
                       Delete
                     </button>
                   </td>
@@ -170,75 +169,27 @@ function UserManagement() {
 
       {/* EDIT MODAL */}
       {isEditOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[400px]">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white rounded-xl p-6 w-[400px]">
             <h2 className="text-xl font-bold mb-4">Edit User</h2>
 
-            <form onSubmit={handleUpdateUser} className="space-y-4">
+            <form onSubmit={handleUpdateUser}>
               <input
-                type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="border rounded-lg p-2 w-full"
-                required
+                className="border p-2 w-full mb-2"
               />
 
               <input
-                type="email"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
-                className="border rounded-lg p-2 w-full"
-                required
+                className="border p-2 w-full mb-2"
               />
 
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 border rounded-lg"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="bg-[#012471] text-white px-4 py-2 rounded-lg"
-                >
-                  Save
-                </button>
-              </div>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded">
+                Save
+              </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* DELETE MODAL */}
-      {isDeleteOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[380px]">
-            <h2 className="text-xl font-bold mb-3 text-red-600">
-              Delete User
-            </h2>
-
-            <p className="mb-6">
-              Are you sure you want to delete this user?
-            </p>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setIsDeleteOpen(false)}
-                className="px-4 py-2 border rounded-lg"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleDeleteUser}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
-              >
-                Yes, Delete
-              </button>
-            </div>
           </div>
         </div>
       )}
