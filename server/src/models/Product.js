@@ -15,6 +15,13 @@ const productSchema = new mongoose.Schema(
 
     poe: { type: Boolean, default: false },
     nightVision: { type: Boolean, default: false },
+
+    // 🔐 VERY IMPORTANT (USER OWNERSHIP)
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
