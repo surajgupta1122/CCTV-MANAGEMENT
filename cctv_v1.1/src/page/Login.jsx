@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../utils/axios";
+import camera from "/src/assets/camera.gif";
 import Navbar from "../components/Navbar";
 
 function Login() {
@@ -48,7 +49,7 @@ function Login() {
           <div className="flex flex-row justify-center">
             <img
               className="w-14 h-10"
-              src="src/assets/camera.gif"
+              src={camera}
               alt="CCTV"
             />
             <h1 className="text-3xl font-bold text-[#012471] ml-2 mb-6">

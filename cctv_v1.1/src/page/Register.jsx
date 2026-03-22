@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
+import camera from "/src/assets/camera.gif";
 import Navbar from "../components/Navbar";
 
 function Register() {
@@ -47,7 +48,7 @@ function Register() {
     <section className="bg-[#96BDF7] flex justify-center items-center h-[86.8vh]">
       <div className="border-t-4 border-[#012471] bg-white p-10 rounded-xl shadow-2xl w-[500px]">
         <div className="flex flex-row justify-center ">
-        <img className="w-14 h-10" src="src/assets/camera.gif" alt="CCTV" />
+        <img className="w-14 h-10" src={camera} alt="CCTV" />
         <h1 className="text-3xl font-bold text-[#012471] ml-2 mb-6">
           CCTV Manage
         </h1>
