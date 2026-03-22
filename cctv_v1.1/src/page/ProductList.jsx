@@ -1,15 +1,28 @@
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
-import editIcon from "../assets/icons/edit.png";
+import filterIcon from "../assets/icons/filter.png";
+import packingListIcon from "../assets/icons/packing-list.png";
 
-
-function UserManagement() {
-  const [users, setUsers] = useState([]);
+function ProductList() {
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All Categories");
   const [loading, setLoading] = useState(true);
 
+  // 🎮 achievement-style message
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
+  const [messageType, setMessageType] = useState("success"); // success | error
+
+  // 🔹 edit modal
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editForm, setEditForm] = useState({});
+
+  // delete modal
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteProductId, setDeleteProductId] = useState(null);
 
   const showMessage = (text, type = "success") => {
     setMessage(text);
@@ -17,177 +30,260 @@ function UserManagement() {
     setTimeout(() => setMessage(""), 1000);
   };
 
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [editEmail, setEditEmail] = useState("");
-
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [deleteUserId, setDeleteUserId] = useState(null);
-
-  // Fetch users
-  const fetchUsers = async () => {
+  // Fetch products
+  const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/users");
-      setUsers(res.data);
-      showMessage("✔ Users loaded");
-    } catch {
-      showMessage("✖ Unable to load users", "error");
+      const res = await axios.get("/products");
+      setProducts(res.data);
+      setFilteredProducts(res.data);
+      showMessage("✔ Products loaded");
+    } catch (error) {
+      showMessage("✖ Failed to load products", "error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchProducts();
   }, []);
 
-  // EDIT
-  const openEditModal = (user) => {
-    setSelectedUser(user);
-    setEditName(user.name);
-    setEditEmail(user.email);
+  // Search & filter
+  useEffect(() => {
+    let data = [...products];
+
+    if (search) {
+      data = data.filter(
+        (p) =>
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.category.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (category !== "All Categories") {
+      data = data.filter((p) => p.category === category);
+    }
+
+    setFilteredProducts(data);
+  }, [search, category, products]);
+
+  // ---------------- EDIT ----------------
+  const openEditModal = (product) => {
+    setSelectedProduct(product);
+    setEditForm(product);
     setIsEditOpen(true);
   };
 
-  const handleUpdateUser = async (e) => {
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm({ ...editForm, [name]: value });
+  };
+
+  const handleUpdateProduct = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.put(`/users/${selectedUser._id}`, {
-        name: editName,
-        email: editEmail,
-      });
+      const res = await axios.put(`/products/${selectedProduct._id}`, editForm);
 
-      setUsers(users.map((u) => (u._id === selectedUser._id ? res.data : u)));
+      setProducts(
+        products.map((p) => (p._id === selectedProduct._id ? res.data : p))
+      );
+
       setIsEditOpen(false);
-      showMessage("✔ User updated");
+      showMessage("✔ Product updated");
     } catch {
-      showMessage("✖ Failed to update user", "error");
+      showMessage("✖ Failed to update product", "error");
     }
   };
 
-  // DELETE
+  // ---------------- DELETE ----------------
   const openDeleteModal = (id) => {
-    setDeleteUserId(id);
+    setDeleteProductId(id);
     setIsDeleteOpen(true);
   };
 
-  const handleDeleteUser = async () => {
+  const handleDeleteProduct = async () => {
     try {
-      await axios.delete(`/users/${deleteUserId}`);
-      setUsers(users.filter((u) => u._id !== deleteUserId));
+      await axios.delete(`/products/${deleteProductId}`);
+
+      setProducts(products.filter((p) => p._id !== deleteProductId));
       setIsDeleteOpen(false);
-      showMessage("✔ User deleted");
+      showMessage("✔ Product deleted");
     } catch {
-      showMessage("✖ Failed to delete user", "error");
+      showMessage("✖ Failed to delete product", "error");
     }
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-2">
-      {/* Header */}
-      <div className="flex justify-between mb-7">
-        <h1 className="text-2xl font-bold text-gray-800">
-          User Management
+    <div className="bg-gray-50 min-h-screen font-sans">
+      <div className="flex justify-between items-center pr-1">
+        <h1 className="text-2xl font-bold text-gray-800 px-1 py-2">
+          Product List
         </h1>
-
         <button
-          onClick={fetchUsers}
-          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition"
+          onClick={fetchProducts}
+          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5" src={refreshIcon}/>
+          <img className="w-5 h-5 mt-1" src={refreshIcon} />
           Refresh
         </button>
       </div>
 
-      {/* Message */}
+      <div className="mx-1 mt-8 rounded-xl shadow-md">
+        <h2 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
+          <img className="w-7 h-7" src={filterIcon} />
+          Search & Filter Products
+        </h2>
+
+        <div className="flex justify-between items-center py-5 px-6">
+          <div className="w-[77%]">
+            <input
+              type="text"
+              placeholder=" 🔍 Search products by name or category...   "
+              className="border border-gray-400 rounded-lg w-full pl-2 py-2 text-sm "
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <select
+              className="border border-gray-400 rounded-lg p-2 text-sm"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option>All Categories</option>
+              <option>Box Camera</option>
+              <option>PTZ Camera</option>
+              <option>Dome Camera</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* 🎮 Minecraft-style message */}
       {message && (
-        <div className="flex justify-end mb-3">
+        <div className="flex justify-end my-3">
           <div
-            className={`px-6 py-2 rounded-lg font-semibold shadow-lg ${
-              messageType === "success"
-                ? "bg-green-600 text-white"
-                : "bg-red-600 text-white"
-            }`}
+            className={`px-6 py-2 rounded-lg font-semibold shadow-lg transition-all
+              ${
+                messageType === "success"
+                  ? "bg-green-600 text-white"
+                  : "bg-red-600 text-white"
+              }`}
           >
             {message}
           </div>
         </div>
       )}
 
-      {/* Table */}
-      {loading ? (
-        <p>Loading users...</p>
-      ) : users.length === 0 ? (
-        <p className="text-red-500">No users found</p>
-      ) : (
-        <div className="bg-white rounded-xl shadow-xl overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-[#012471] text-white">
+      <div className="mx-1 mt-8 rounded-xl shadow-lg">
+        <h3 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
+          <img className="w-6 h-6" src={packingListIcon} />
+          Product List ({filteredProducts.length} items)
+        </h3>
+
+        <table className="w-full text-left text-sm font-semibold">
+          <thead className="bg-gray-100 font-bold text-gray-600 border-b">
+            <tr>
+              <th className="p-3">PRODUCT</th>
+              <th className="p-3">BRAND</th>
+              <th className="p-3">CATEGORY</th>
+              <th className="p-3">PRICE</th>
+              <th className="p-3">STOCK</th>
+              <th className="p-3">ADDED</th>
+              <th className="p-3">STATUS</th>
+              <th className="p-3">ACTION</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading ? (
               <tr>
-                <th className="p-3">#</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Action</th>
+                <td colSpan="7" className="p-4 text-center">
+                  Loading products...
+                </td>
               </tr>
-            </thead>
-
-            <tbody>
-              {users.map((user, index) => (
-                <tr key={user._id} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2">{index + 1}</td>
-                  <td className="px-3 py-2">{user.name}</td>
-                  <td className="px-3 py-2">{user.email}</td>
-
-                  {/* ✅ ACTION BUTTONS */}
-                  <td className="px-3 py-2 flex gap-2">
-                    {/* Edit */}
-                    <button
-                      onClick={() => openEditModal(user)}
-                      className="bg-green-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-green-600 hover:shadow-md transition"
+            ) : filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="p-4 text-center text-gray-500">
+                  No products found
+                </td>
+              </tr>
+            ) : (
+              filteredProducts.map((p) => (
+                <tr key={p._id} className="border-t">
+                  <td className="p-3">{p.name}</td>
+                  <td className="p-3 text-gray-600">{p.brand}</td>
+                  <td className="p-3 text-gray-600">{p.category}</td>
+                  <td className="p-3">₹{p.price}</td>
+                  <td className="p-3">{p.quantity}</td>
+                  <td className="p-3 text-gray-600">
+                    {new Date(p.createdAt).toLocaleString()}
+                  </td>
+                  <td className="p-3">
+                    <span
+                      className={`font-medium ${
+                        p.quantity > 0 ? "text-green-600" : "text-red-600"
+                      }`}
                     >
-                      <img src={editIcon} className="w-4 h-4" />
+                      {p.quantity > 0 ? "In Stock" : "Out of Stock"}
+                    </span>
+                  </td>
+                  <td className="p-3 flex gap-2">
+                    <button
+                      onClick={() => openEditModal(p)}
+                      className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                    >
                       Edit
                     </button>
-
-                    {/* Delete */}
                     <button
-                      onClick={() => openDeleteModal(user._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-red-600 hover:shadow-md transition"
+                      onClick={() => openDeleteModal(p._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
-                      
                       Delete
                     </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {/* EDIT MODAL */}
+      {/* ✏️ EDIT PRODUCT MODAL */}
       {isEditOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[400px]">
-            <h2 className="text-xl font-bold mb-4">Edit User</h2>
+          <div className="bg-white rounded-xl shadow-xl p-6 w-[420px]">
+            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
 
-            <form onSubmit={handleUpdateUser} className="space-y-4">
+            <form onSubmit={handleUpdateProduct} className="space-y-4">
               <input
                 type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                className="border rounded-lg p-2 w-full"
+                name="name"
+                value={editForm.name || ""}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded-lg p-2 w-full"
                 required
               />
 
               <input
-                type="email"
-                value={editEmail}
-                onChange={(e) => setEditEmail(e.target.value)}
-                className="border rounded-lg p-2 w-full"
+                type="number"
+                name="price"
+                value={editForm.price || ""}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded-lg p-2 w-full"
+                required
+              />
+
+              <input
+                type="number"
+                name="quantity"
+                value={editForm.quantity || ""}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded-lg p-2 w-full"
                 required
               />
 
@@ -202,7 +298,7 @@ function UserManagement() {
 
                 <button
                   type="submit"
-                  className="bg-[#012471] text-white px-4 py-2 rounded-lg"
+                  className="bg-[#012471] text-white px-4 py-2 rounded-lg hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
                 >
                   Save
                 </button>
@@ -212,16 +308,16 @@ function UserManagement() {
         </div>
       )}
 
-      {/* DELETE MODAL */}
+      {/* 🗑️ DELETE PRODUCT MODAL */}
       {isDeleteOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[380px]">
             <h2 className="text-xl font-bold mb-3 text-red-600">
-              Delete User
+              Delete Product
             </h2>
 
-            <p className="mb-6">
-              Are you sure you want to delete this user?
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete this product?
             </p>
 
             <div className="flex justify-end gap-3">
@@ -233,8 +329,8 @@ function UserManagement() {
               </button>
 
               <button
-                onClick={handleDeleteUser}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                onClick={handleDeleteProduct}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
               >
                 Yes, Delete
               </button>
@@ -246,4 +342,4 @@ function UserManagement() {
   );
 }
 
-export default UserManagement;
+export default ProductList;
