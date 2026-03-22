@@ -10,10 +10,11 @@ function ProductList() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // 🎮 achievement-style message
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success"); // success | error
+  const [messageType, setMessageType] = useState("success");
 
   // 🔹 edit modal
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -24,10 +25,44 @@ function ProductList() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
 
+  // Get current user from localStorage
+  useEffect(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      setCurrentUser(user);
+      console.log("Current user:", user);
+    } catch (err) {
+      console.error("Error parsing user:", err);
+    }
+  }, []);
+
   const showMessage = (text, type = "success") => {
     setMessage(text);
     setMessageType(type);
     setTimeout(() => setMessage(""), 1000);
+  };
+
+  // Check if user can edit/delete a product
+  const canModify = (product) => {
+    if (!currentUser) return false;
+    
+    // Admin can modify all products
+    if (currentUser.role === "admin") return true;
+    
+    // Regular users can only modify their own products
+    if (!product || !product.createdBy) return false;
+    
+    // Get owner ID (handle different formats)
+    let ownerId = null;
+    if (typeof product.createdBy === 'string') {
+      ownerId = product.createdBy;
+    } else if (product.createdBy._id) {
+      ownerId = product.createdBy._id;
+    } else if (product.createdBy.toString) {
+      ownerId = product.createdBy.toString();
+    }
+    
+    return ownerId === currentUser.id;
   };
 
   // Fetch products
@@ -92,8 +127,8 @@ function ProductList() {
 
       setIsEditOpen(false);
       showMessage("✔ Product updated");
-    } catch {
-      showMessage("✖ Failed to update product", "error");
+    } catch (error) {
+      showMessage(error.response?.data?.message || "✖ Failed to update product", "error");
     }
   };
 
@@ -110,8 +145,8 @@ function ProductList() {
       setProducts(products.filter((p) => p._id !== deleteProductId));
       setIsDeleteOpen(false);
       showMessage("✔ Product deleted");
-    } catch {
-      showMessage("✖ Failed to delete product", "error");
+    } catch (error) {
+      showMessage(error.response?.data?.message || "✖ Failed to delete product", "error");
     }
   };
 
@@ -125,14 +160,14 @@ function ProductList() {
           onClick={fetchProducts}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5 mt-1" src={refreshIcon} />
+          <img className="w-5 h-5 mt-1" src={refreshIcon} alt="refresh" />
           Refresh
         </button>
       </div>
 
       <div className="mx-1 mt-8 rounded-xl shadow-md">
         <h2 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-7 h-7" src={filterIcon} />
+          <img className="w-7 h-7" src={filterIcon} alt="filter" />
           Search & Filter Products
         </h2>
 
@@ -181,76 +216,94 @@ function ProductList() {
 
       <div className="mx-1 mt-8 rounded-xl shadow-lg">
         <h3 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-6 h-6" src={packingListIcon} />
+          <img className="w-6 h-6" src={packingListIcon} alt="products" />
           Product List ({filteredProducts.length} items)
         </h3>
 
-        <table className="w-full text-left text-sm font-semibold">
-          <thead className="bg-gray-100 font-bold text-gray-600 border-b">
-            <tr>
-              <th className="p-3">PRODUCT</th>
-              <th className="p-3">BRAND</th>
-              <th className="p-3">CATEGORY</th>
-              <th className="p-3">PRICE</th>
-              <th className="p-3">STOCK</th>
-              <th className="p-3">ADDED</th>
-              <th className="p-3">STATUS</th>
-              <th className="p-3">ACTION</th>
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm font-semibold">
+            <thead className="bg-gray-100 font-bold text-gray-600 border-b">
+              <tr>
+                <th className="p-3">PRODUCT</th>
+                <th className="p-3">BRAND</th>
+                <th className="p-3">CATEGORY</th>
+                <th className="p-3">PRICE</th>
+                <th className="p-3">STOCK</th>
+                <th className="p-3">ADDED</th>
+                <th className="p-3">STATUS</th>
+                {currentUser?.role === "admin" && (
+                  <th className="p-3">CREATED BY</th>
+                )}
+                <th className="p-3">ACTION</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7" className="p-4 text-center">
-                  Loading products...
-                </td>
-              </tr>
-            ) : filteredProducts.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="p-4 text-center text-gray-500">
-                  No products found
-                </td>
-              </tr>
-            ) : (
-              filteredProducts.map((p) => (
-                <tr key={p._id} className="border-t">
-                  <td className="p-3">{p.name}</td>
-                  <td className="p-3 text-gray-600">{p.brand}</td>
-                  <td className="p-3 text-gray-600">{p.category}</td>
-                  <td className="p-3">₹{p.price}</td>
-                  <td className="p-3">{p.quantity}</td>
-                  <td className="p-3 text-gray-600">
-                    {new Date(p.createdAt).toLocaleString()}
-                  </td>
-                  <td className="p-3">
-                    <span
-                      className={`font-medium ${
-                        p.quantity > 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {p.quantity > 0 ? "In Stock" : "Out of Stock"}
-                    </span>
-                  </td>
-                  <td className="p-3 flex gap-2">
-                    <button
-                      onClick={() => openEditModal(p)}
-                      className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => openDeleteModal(p._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
-                    >
-                      Delete
-                    </button>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={currentUser?.role === "admin" ? 9 : 8} className="p-4 text-center">
+                    Loading products...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={currentUser?.role === "admin" ? 9 : 8} className="p-4 text-center text-gray-500">
+                    No products found
+                  </td>
+                </tr>
+              ) : (
+                filteredProducts.map((p) => (
+                  <tr key={p._id} className="border-t hover:bg-gray-50">
+                    <td className="p-3">{p.name}</td>
+                    <td className="p-3 text-gray-600">{p.brand}</td>
+                    <td className="p-3 text-gray-600">{p.category}</td>
+                    <td className="p-3">₹{p.price}</td>
+                    <td className="p-3">{p.quantity}</td>
+                    <td className="p-3 text-gray-600">
+                      {new Date(p.createdAt).toLocaleString()}
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`font-medium ${
+                          p.quantity > 0 ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {p.quantity > 0 ? "In Stock" : "Out of Stock"}
+                      </span>
+                    </td>
+                    
+                    {/* Created By column - only for admin */}
+                    {currentUser?.role === "admin" && (
+                      <td className="p-3 text-gray-600">
+                        {p.createdBy?.email || p.createdBy?.name || "Unknown"}
+                      </td>
+                    )}
+                    
+                    <td className="p-3">
+                      {/* Only show edit/delete buttons if user has permission */}
+                      {canModify(p) && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openEditModal(p)}
+                            className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(p._id)}
+                            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* ✏️ EDIT PRODUCT MODAL */}
