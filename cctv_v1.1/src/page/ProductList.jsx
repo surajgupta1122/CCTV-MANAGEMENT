@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
+import refreshIcon from "../assets/icons/refresh.png";
+import filterIcon from "../assets/icons/filter.png";
+import packingListIcon from "../assets/icons/packing-list.png";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
@@ -122,14 +125,14 @@ function ProductList() {
           onClick={fetchProducts}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5 mt-1" src="src/assets/icons/refresh.png" />
+          <img className="w-5 h-5 mt-1" src={refreshIcon} />
           Refresh
         </button>
       </div>
 
       <div className="mx-1 mt-8 rounded-xl shadow-md">
         <h2 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-7 h-7" src="src/assets/icons/filter.png" />
+          <img className="w-7 h-7" src={filterIcon} />
           Search & Filter Products
         </h2>
 
@@ -178,7 +181,7 @@ function ProductList() {
 
       <div className="mx-1 mt-8 rounded-xl shadow-lg">
         <h3 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-6 h-6" src="src/assets/icons/packing-list.png" />
+          <img className="w-6 h-6" src={packingListIcon} />
           Product List ({filteredProducts.length} items)
         </h3>
 
