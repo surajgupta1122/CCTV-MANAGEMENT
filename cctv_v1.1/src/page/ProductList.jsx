@@ -239,14 +239,14 @@ function ProductList() {
                       onClick={() => openEditModal(p)}
                       className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
-                      <img src={editIcon} className="w-4 h-4 inline-block mr-1" />
+                      <img src={editIcon} className="w-3 h-3" />
                       Edit
                     </button>
                     <button
                       onClick={() => openDeleteModal(p._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
-                      <img src={deleteIcon} className="w-4 h-4 inline-block mr-1" />
+                      <img src={deleteIcon} className="w-3 h-3" />
                       Delete
                     </button>
                   </td>
