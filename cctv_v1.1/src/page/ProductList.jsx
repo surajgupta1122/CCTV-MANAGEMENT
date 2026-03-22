@@ -33,8 +33,6 @@ function ProductList() {
         const user = JSON.parse(userData);
         setCurrentUser(user);
         console.log("Current user loaded:", user);
-        console.log("User ID:", user.id || user._id);
-        console.log("User Role:", user.role);
       } else {
         console.log("No user data found in localStorage");
       }
@@ -47,49 +45,6 @@ function ProductList() {
     setMessage(text);
     setMessageType(type);
     setTimeout(() => setMessage(""), 1000);
-  };
-
-  // Check if user can edit/delete a product
-  const canModify = (product) => {
-    if (!currentUser) {
-      console.log("No current user found");
-      return false;
-    }
-    
-    // Admin can modify all products
-    if (currentUser.role === "admin") {
-      console.log("Admin user - can modify product:", product.name);
-      return true;
-    }
-    
-    // Regular users can only modify their own products
-    if (!product || !product.createdBy) {
-      console.log("Product has no createdBy field");
-      return false;
-    }
-    
-    // Get current user ID (handle both id and _id formats)
-    const currentUserId = currentUser.id || currentUser._id;
-    
-    // Get owner ID (handle different formats)
-    let ownerId = null;
-    if (typeof product.createdBy === 'string') {
-      ownerId = product.createdBy;
-    } else if (product.createdBy._id) {
-      ownerId = product.createdBy._id;
-    } else if (product.createdBy.toString) {
-      ownerId = product.createdBy.toString();
-    }
-    
-    // Convert both to strings for comparison
-    const canMod = String(ownerId) === String(currentUserId);
-    
-    console.log(`Product: ${product.name}`);
-    console.log(`  - Owner ID: ${ownerId}`);
-    console.log(`  - Current User ID: ${currentUserId}`);
-    console.log(`  - Can Modify: ${canMod}`);
-    
-    return canMod;
   };
 
   // Fetch products
@@ -225,8 +180,8 @@ function ProductList() {
           <div className="w-[77%]">
             <input
               type="text"
-              placeholder=" 🔍 Search products by name or category...   "
-              className="border border-gray-400 rounded-lg w-full pl-2 py-2 text-sm "
+              placeholder=" 🔍 Search products by name or category..."
+              className="border border-gray-400 rounded-lg w-full pl-2 py-2 text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -281,9 +236,6 @@ function ProductList() {
                 <th className="p-3">STOCK</th>
                 <th className="p-3">ADDED</th>
                 <th className="p-3">STATUS</th>
-                {currentUser?.role === "admin" && (
-                  <th className="p-3">CREATED BY</th>
-                )}
                 <th className="p-3">ACTION</th>
               </tr>
             </thead>
@@ -291,13 +243,13 @@ function ProductList() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={currentUser?.role === "admin" ? 9 : 8} className="p-4 text-center">
+                  <td colSpan="8" className="p-4 text-center">
                     Loading products...
                   </td>
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={currentUser?.role === "admin" ? 9 : 8} className="p-4 text-center text-gray-500">
+                  <td colSpan="8" className="p-4 text-center text-gray-500">
                     No products found
                   </td>
                 </tr>
@@ -322,31 +274,22 @@ function ProductList() {
                       </span>
                     </td>
                     
-                    {/* Created By column - only for admin */}
-                    {currentUser?.role === "admin" && (
-                      <td className="p-3 text-gray-600">
-                        {p.createdBy?.email || p.createdBy?.name || "Unknown"}
-                      </td>
-                    )}
-                    
                     <td className="p-3">
-                      {/* Only show edit/delete buttons if user has permission */}
-                      {canModify(p) && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => openEditModal(p)}
-                            className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => openDeleteModal(p._id)}
-                            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
+                      {/* Edit and Delete buttons always show for all users */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openEditModal(p)}
+                          className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => openDeleteModal(p._id)}
+                          className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
