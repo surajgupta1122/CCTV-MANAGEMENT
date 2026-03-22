@@ -3,6 +3,8 @@ import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 import filterIcon from "../assets/icons/filter.png";
 import packingListIcon from "../assets/icons/packing-list.png";
+import editIcon from "../assets/icons/edit.png";
+import deleteIcon from "../assets/icons/delete.png";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
@@ -234,12 +236,14 @@ function ProductList() {
                   </td>
                   <td className="p-3 flex gap-2">
                     <button
+                      src={editIcon}
                       onClick={() => openEditModal(p)}
                       className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
                       Edit
                     </button>
                     <button
+                      src={deleteIcon}
                       onClick={() => openDeleteModal(p._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >

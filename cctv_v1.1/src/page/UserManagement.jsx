@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
+import refreshIcon from "../assets/icons/refresh.png";
+import editIcon from "../assets/icons/edit.png";
+import deleteIcon from "../assets/icons/delete.png";
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -94,7 +97,7 @@ function UserManagement() {
           onClick={fetchUsers}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5 mt-1" src="src/assets/icons/refresh.png" />
+          <img className="w-5 h-5 mt-1" src={refreshIcon} />
           Refresh
         </button>
       </div>
@@ -140,12 +143,14 @@ function UserManagement() {
                   <td className="px-3 py-2">{user.email}</td>
                   <td className="px-3 py-2 flex gap-2">
                     <button
+                      src={editIcon}
                       className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                       onClick={() => openEditModal(user)}
                     >
                       Edit
                     </button>
                     <button
+                      src={deleteIcon}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                       onClick={() => openDeleteModal(user._id)}
                     >
