@@ -1,6 +1,12 @@
 import { useState } from "react";
 import axios from "../utils/axios";
 import { useNavigate } from "react-router-dom";
+import addCartIcon from "../assets/icons/add-cart.png";
+import closeIcon from "../assets/icons/close.png";
+import bookmarkIcon from "../assets/icons/bookmark.png";
+import boxIcon from "../assets/icons/box.png";
+import brandIcon from "../assets/icons/new-poster.png";
+import pricingIcon from "../assets/icons/competitive.png";
 
 function Addproduct() {
   const navigate = useNavigate();
@@ -100,7 +106,7 @@ function Addproduct() {
           <h1 className="flex gap-2 items-center text-xl font-medium">
             <img
               className="w-8 h-8"
-              src="src/assets/icons/add-cart.png"
+              src={addCartIcon}
               alt="add"
             />
             Add Product
@@ -113,7 +119,7 @@ function Addproduct() {
             >
               <img
                 className="w-4 h-4 mt-1"
-                src="src/assets/icons/close.png"
+                src={closeIcon}
                 alt="clear"
               />
               Clear
@@ -126,7 +132,7 @@ function Addproduct() {
             >
               <img
                 className="w-5 h-5 mt-1"
-                src="src/assets/icons/bookmark.png"
+                src={bookmarkIcon}
                 alt="save"
               />
               Save
@@ -143,7 +149,7 @@ function Addproduct() {
           <h2 className="font-medium flex items-center gap-2 text-base md:text-lg">
             <img
               className="w-6 h-6"
-              src="src/assets/icons/box.png"
+              src={boxIcon}
               alt="info"
             />
             Product Information
@@ -181,7 +187,7 @@ function Addproduct() {
           <h2 className="font-medium flex items-center gap-2 text-base md:text-lg">
             <img
               className="w-5 h-5"
-              src="src/assets/icons/new-poster.png"
+              src={brandIcon}
               alt="brand"
             />
             Brand & Category
@@ -227,7 +233,7 @@ function Addproduct() {
           <h2 className="font-medium flex items-center gap-2 text-base md:text-lg">
             <img
               className="w-5 h-5"
-              src="src/assets/icons/competitive.png"
+              src={pricingIcon}
               alt="pricing"
             />
             Pricing & Inventory
