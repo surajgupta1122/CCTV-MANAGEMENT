@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axios";
+import refreshIcon from "../assets/icons/refresh.png";
+import boxesIcon from "../assets/icons/boxes.png";
+import barChartIcon from "../assets/icons/bar-chart.png";
+import qualityIcon from "../assets/icons/quality-control.png";
+import attentionIcon from "../assets/icons/attention.png";
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -87,7 +92,7 @@ function Dashboard() {
           >
             <img
               className="w-5 h-5"
-              src="src/assets/icons/refresh.png"
+              src={refreshIcon}
               alt="refresh"
             />
             {loading ? "Refreshing..." : "Refresh"}
@@ -114,19 +119,19 @@ function Dashboard() {
           {
             label: "Total Products",
             value: stats.totalProducts,
-            icon: "boxes.png",
+            icon: boxesIcon,
           },
           {
             label: "Inventory Value",
             value: `₹${stats.inventoryValue.toLocaleString()}`,
-            icon: "bar-chart.png",
+            icon: barChartIcon,
           },
           {
             label: "Today's New",
             value: stats.todaysNewCount,
-            icon: "quality-control.png",
+            icon: qualityIcon ,
           },
-          { label: "Low Stock", value: stats.lowStock, icon: "attention.png" },
+          { label: "Low Stock", value: stats.lowStock, icon: attentionIcon },
         ].map((item) => (
           <div
             key={item.label}
@@ -134,7 +139,7 @@ function Dashboard() {
           >
             <img
               className="w-[47%]"
-              src={`src/assets/icons/${item.icon}`}
+              src={item.icon}
               alt={item.label}
             />
             <p className="text-lg text-gray-600 font-bold">{item.label}</p>
