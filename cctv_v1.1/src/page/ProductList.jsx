@@ -236,17 +236,17 @@ function ProductList() {
                   </td>
                   <td className="p-3 flex gap-2">
                     <button
-                      src={editIcon}
                       onClick={() => openEditModal(p)}
                       className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
+                      <img src={editIcon} className="w-4 h-4 inline-block mr-1" />
                       Edit
                     </button>
                     <button
-                      src={deleteIcon}
                       onClick={() => openDeleteModal(p._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                     >
+                      <img src={deleteIcon} className="w-4 h-4 inline-block mr-1" />
                       Delete
                     </button>
                   </td>
