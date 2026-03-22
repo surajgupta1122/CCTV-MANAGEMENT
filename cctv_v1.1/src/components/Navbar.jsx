@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import  camera  from "../assets/camera.gif";
+import camera from "/src/assets/camera.gif";
 
 function Navbar() {
   const location = useLocation();
@@ -8,9 +8,16 @@ function Navbar() {
 
   // ✅ Load user from localStorage
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUser(storedUser);
-  }, []);
+  if (typeof window !== "undefined") {
+    try {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    } catch (err) {
+      console.error("Error parsing user:", err);
+      setUser(null);
+    }
+  }
+}, []);
 
   // ✅ Logout
   const handleLogout = () => {
