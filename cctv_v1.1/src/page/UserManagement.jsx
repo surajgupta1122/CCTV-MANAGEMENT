@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 import editIcon from "../assets/icons/edit.png";
-import deleteIcon from "../assets/icons/trash.png";
+// import deleteIcon from "../assets/icons/trash.png";
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
