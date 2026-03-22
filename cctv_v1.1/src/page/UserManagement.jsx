@@ -8,7 +8,6 @@ function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🎮 achievement-style message
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
 
@@ -18,13 +17,11 @@ function UserManagement() {
     setTimeout(() => setMessage(""), 1000);
   };
 
-  // edit modal
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
 
-  // delete modal
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
 
@@ -46,7 +43,7 @@ function UserManagement() {
     fetchUsers();
   }, []);
 
-  // ---------------- EDIT ----------------
+  // EDIT
   const openEditModal = (user) => {
     setSelectedUser(user);
     setEditName(user.name);
@@ -64,7 +61,6 @@ function UserManagement() {
       });
 
       setUsers(users.map((u) => (u._id === selectedUser._id ? res.data : u)));
-
       setIsEditOpen(false);
       showMessage("✔ User updated");
     } catch {
@@ -72,7 +68,7 @@ function UserManagement() {
     }
   };
 
-  // ---------------- DELETE ----------------
+  // DELETE
   const openDeleteModal = (id) => {
     setDeleteUserId(id);
     setIsDeleteOpen(true);
@@ -90,39 +86,42 @@ function UserManagement() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="flex justify-between mb-7 px-1 py-2">
-        <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
+    <div className="bg-gray-50 min-h-screen p-2">
+      {/* Header */}
+      <div className="flex justify-between mb-7">
+        <h1 className="text-2xl font-bold text-gray-800">
+          User Management
+        </h1>
+
         <button
           onClick={fetchUsers}
-          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
+          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5 mt-1" src={refreshIcon} />
+          <img src={refreshIcon} className="w-5 h-5" />
           Refresh
         </button>
       </div>
 
-      {/* 🎮 message */}
+      {/* Message */}
       {message && (
         <div className="flex justify-end mb-3">
           <div
-            className={`px-6 py-2 rounded-lg font-semibold shadow-lg
-              ${
-                messageType === "success"
-                  ? "bg-green-600 text-white"
-                  : "bg-red-600 text-white"
-              }`}
+            className={`px-6 py-2 rounded-lg font-semibold shadow-lg ${
+              messageType === "success"
+                ? "bg-green-600 text-white"
+                : "bg-red-600 text-white"
+            }`}
           >
             {message}
           </div>
         </div>
       )}
 
-      {/* ✅ CLEAN TERNARY RENDERING */}
+      {/* Table */}
       {loading ? (
         <p>Loading users...</p>
       ) : users.length === 0 ? (
-        <p className="text-red-500 ">No users found</p>
+        <p className="text-red-500">No users found</p>
       ) : (
         <div className="bg-white rounded-xl shadow-xl overflow-x-auto">
           <table className="w-full text-left">
@@ -141,20 +140,25 @@ function UserManagement() {
                   <td className="px-3 py-2">{index + 1}</td>
                   <td className="px-3 py-2">{user.name}</td>
                   <td className="px-3 py-2">{user.email}</td>
+
+                  {/* ✅ ACTION BUTTONS */}
                   <td className="px-3 py-2 flex gap-2">
+                    {/* Edit */}
                     <button
-                      className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                       onClick={() => openEditModal(user)}
+                      className="bg-green-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-green-600 hover:shadow-md transition"
                     >
+                      <img src={editIcon} className="w-4 h-4" />
                       Edit
-                      <img src={editIcon} alt="edit" className="w-5 h-5" />
                     </button>
+
+                    {/* Delete */}
                     <button
-                      className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                       onClick={() => openDeleteModal(user._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 hover:bg-red-600 hover:shadow-md transition"
                     >
+                      <img src={deleteIcon} className="w-4 h-4" />
                       Delete
-                      <img src={deleteIcon} alt="delete" className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
@@ -175,7 +179,7 @@ function UserManagement() {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="border border-gray-300 rounded-lg p-2 w-full"
+                className="border rounded-lg p-2 w-full"
                 required
               />
 
@@ -183,7 +187,7 @@ function UserManagement() {
                 type="email"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
-                className="border border-gray-300 rounded-lg p-2 w-full"
+                className="border rounded-lg p-2 w-full"
                 required
               />
 
@@ -195,9 +199,10 @@ function UserManagement() {
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
-                  className="bg-[#012471] text-white px-4 py-2 rounded-lg hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
+                  className="bg-[#012471] text-white px-4 py-2 rounded-lg"
                 >
                   Save
                 </button>
@@ -211,9 +216,11 @@ function UserManagement() {
       {isDeleteOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[380px]">
-            <h2 className="text-xl font-bold mb-3 text-red-600">Delete User</h2>
+            <h2 className="text-xl font-bold mb-3 text-red-600">
+              Delete User
+            </h2>
 
-            <p className="text-gray-700 mb-6">
+            <p className="mb-6">
               Are you sure you want to delete this user?
             </p>
 
@@ -227,7 +234,7 @@ function UserManagement() {
 
               <button
                 onClick={handleDeleteUser}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg"
               >
                 Yes, Delete
               </button>
