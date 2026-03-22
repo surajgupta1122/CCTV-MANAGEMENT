@@ -150,7 +150,6 @@ function UserManagement() {
                       <img src={editIcon} alt="edit" className="w-5 h-5" />
                     </button>
                     <button
-                      src={deleteIcon}
                       className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                       onClick={() => openDeleteModal(user._id)}
                     >
