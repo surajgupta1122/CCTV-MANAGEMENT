@@ -10,29 +10,19 @@ function ProductList() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
 
-  // Modal states
+  // 🎮 achievement-style message
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success"); // success | error
+
+  // 🔹 edit modal
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editForm, setEditForm] = useState({});
+
+  // delete modal
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
-  
-  // Message states
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
-
-  // Get current user from localStorage
-  useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      setCurrentUser(user);
-      console.log("Current user loaded:", user);
-    } catch (err) {
-      console.error("Error parsing user:", err);
-    }
-  }, []);
 
   const showMessage = (text, type = "success") => {
     setMessage(text);
@@ -45,12 +35,10 @@ function ProductList() {
     try {
       setLoading(true);
       const res = await axios.get("/products");
-      console.log("Products received:", res.data);
       setProducts(res.data);
       setFilteredProducts(res.data);
       showMessage("✔ Products loaded");
     } catch (error) {
-      console.error("Fetch error:", error);
       showMessage("✖ Failed to load products", "error");
     } finally {
       setLoading(false);
@@ -80,38 +68,7 @@ function ProductList() {
     setFilteredProducts(data);
   }, [search, category, products]);
 
-  // Check if user can edit/delete a product
-  const canModify = (product) => {
-    if (!currentUser) {
-      return false;
-    }
-    
-    // Admin can modify all products
-    if (currentUser.role === "admin") {
-      return true;
-    }
-    
-    // If no product or no createdBy, return false
-    if (!product || !product.createdBy) {
-      return false;
-    }
-    
-    // Get the owner ID (handle different formats)
-    let ownerId = null;
-    
-    if (typeof product.createdBy === 'string') {
-      ownerId = product.createdBy;
-    } else if (product.createdBy._id) {
-      ownerId = product.createdBy._id;
-    } else if (product.createdBy.toString) {
-      ownerId = product.createdBy.toString();
-    }
-    
-    // Compare with current user's ID
-    return ownerId === currentUser.id;
-  };
-
-  // Edit functions
+  // ---------------- EDIT ----------------
   const openEditModal = (product) => {
     setSelectedProduct(product);
     setEditForm(product);
@@ -125,18 +82,22 @@ function ProductList() {
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
+
     try {
       const res = await axios.put(`/products/${selectedProduct._id}`, editForm);
-      setProducts(products.map((p) => (p._id === selectedProduct._id ? res.data : p)));
+
+      setProducts(
+        products.map((p) => (p._id === selectedProduct._id ? res.data : p))
+      );
+
       setIsEditOpen(false);
       showMessage("✔ Product updated");
-    } catch (error) {
-      console.error("Update error:", error);
-      showMessage(error.response?.data?.message || "✖ Failed to update product", "error");
+    } catch {
+      showMessage("✖ Failed to update product", "error");
     }
   };
 
-  // Delete functions
+  // ---------------- DELETE ----------------
   const openDeleteModal = (id) => {
     setDeleteProductId(id);
     setIsDeleteOpen(true);
@@ -145,12 +106,12 @@ function ProductList() {
   const handleDeleteProduct = async () => {
     try {
       await axios.delete(`/products/${deleteProductId}`);
+
       setProducts(products.filter((p) => p._id !== deleteProductId));
       setIsDeleteOpen(false);
       showMessage("✔ Product deleted");
-    } catch (error) {
-      console.error("Delete error:", error);
-      showMessage(error.response?.data?.message || "✖ Failed to delete product", "error");
+    } catch {
+      showMessage("✖ Failed to delete product", "error");
     }
   };
 
@@ -164,27 +125,28 @@ function ProductList() {
           onClick={fetchProducts}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
         >
-          <img className="w-5 h-5 mt-1" src={refreshIcon} alt="refresh" />
+          <img className="w-5 h-5 mt-1" src={refreshIcon} />
           Refresh
         </button>
       </div>
 
-      {/* Search & Filter Section */}
       <div className="mx-1 mt-8 rounded-xl shadow-md">
         <h2 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-7 h-7" src={filterIcon} alt="filter" />
+          <img className="w-7 h-7" src={filterIcon} />
           Search & Filter Products
         </h2>
+
         <div className="flex justify-between items-center py-5 px-6">
           <div className="w-[77%]">
             <input
               type="text"
-              placeholder="🔍 Search products by name or category..."
-              className="border border-gray-400 rounded-lg w-full pl-2 py-2 text-sm"
+              placeholder=" 🔍 Search products by name or category...   "
+              className="border border-gray-400 rounded-lg w-full pl-2 py-2 text-sm "
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+
           <div>
             <select
               className="border border-gray-400 rounded-lg p-2 text-sm"
@@ -201,176 +163,144 @@ function ProductList() {
         </div>
       </div>
 
-      {/* Message */}
+      {/* 🎮 Minecraft-style message */}
       {message && (
         <div className="flex justify-end my-3">
-          <div className={`px-6 py-2 rounded-lg font-semibold shadow-lg ${
-            messageType === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
-          }`}>
+          <div
+            className={`px-6 py-2 rounded-lg font-semibold shadow-lg transition-all
+              ${
+                messageType === "success"
+                  ? "bg-green-600 text-white"
+                  : "bg-red-600 text-white"
+              }`}
+          >
             {message}
           </div>
         </div>
       )}
 
-      {/* Products Table */}
       <div className="mx-1 mt-8 rounded-xl shadow-lg">
         <h3 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-6 h-6" src={packingListIcon} alt="products" />
+          <img className="w-6 h-6" src={packingListIcon} />
           Product List ({filteredProducts.length} items)
         </h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm font-semibold">
-            <thead className="bg-gray-100 font-bold text-gray-600 border-b">
+        <table className="w-full text-left text-sm font-semibold">
+          <thead className="bg-gray-100 font-bold text-gray-600 border-b">
+            <tr>
+              <th className="p-3">PRODUCT</th>
+              <th className="p-3">BRAND</th>
+              <th className="p-3">CATEGORY</th>
+              <th className="p-3">PRICE</th>
+              <th className="p-3">STOCK</th>
+              <th className="p-3">ADDED</th>
+              <th className="p-3">STATUS</th>
+              <th className="p-3">ACTION</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading ? (
               <tr>
-                <th className="p-3">PRODUCT</th>
-                <th className="p-3">BRAND</th>
-                <th className="p-3">CATEGORY</th>
-                <th className="p-3">PRICE</th>
-                <th className="p-3">STOCK</th>
-                <th className="p-3">ADDED</th>
-                <th className="p-3">STATUS</th>
-                {currentUser?.role === "admin" && (
-                  <th className="p-3">CREATED BY</th>
-                )}
-                <th className="p-3">ACTION</th>
+                <td colSpan="7" className="p-4 text-center">
+                  Loading products...
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={currentUser?.role === "admin" ? 9 : 8} className="p-4 text-center">
-                    Loading products...
+            ) : filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="p-4 text-center text-gray-500">
+                  No products found
+                </td>
+              </tr>
+            ) : (
+              filteredProducts.map((p) => (
+                <tr key={p._id} className="border-t">
+                  <td className="p-3">{p.name}</td>
+                  <td className="p-3 text-gray-600">{p.brand}</td>
+                  <td className="p-3 text-gray-600">{p.category}</td>
+                  <td className="p-3">₹{p.price}</td>
+                  <td className="p-3">{p.quantity}</td>
+                  <td className="p-3 text-gray-600">
+                    {new Date(p.createdAt).toLocaleString()}
+                  </td>
+                  <td className="p-3">
+                    <span
+                      className={`font-medium ${
+                        p.quantity > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {p.quantity > 0 ? "In Stock" : "Out of Stock"}
+                    </span>
+                  </td>
+                  <td className="p-3 flex gap-2">
+                    <button
+                      onClick={() => openEditModal(p)}
+                      className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(p._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
-              ) : filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={currentUser?.role === "admin" ? 9 : 8} className="p-4 text-center text-gray-500">
-                    No products found
-                  </td>
-                </tr>
-              ) : (
-                filteredProducts.map((p) => (
-                  <tr key={p._id} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{p.name}</td>
-                    <td className="p-3 text-gray-600">{p.brand}</td>
-                    <td className="p-3 text-gray-600">{p.category}</td>
-                    <td className="p-3">₹{p.price}</td>
-                    <td className="p-3">{p.quantity}</td>
-                    <td className="p-3 text-gray-600">
-                      {new Date(p.createdAt).toLocaleString()}
-                    </td>
-                    <td className="p-3">
-                      <span
-                        className={`font-medium ${
-                          p.quantity > 0 ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        {p.quantity > 0 ? "In Stock" : "Out of Stock"}
-                      </span>
-                    </td>
-                    
-                    {/* Created By column - only for admin */}
-                    {currentUser?.role === "admin" && (
-                      <td className="p-3 text-gray-600">
-                        {p.createdBy?.email || p.createdBy?.name || "Unknown"}
-                      </td>
-                    )}
-                    
-                    <td className="p-3">
-                      {/* Only show edit/delete buttons if user has permission */}
-                      {canModify(p) ? (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => openEditModal(p)}
-                            className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => openDeleteModal(p._id)}
-                            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm italic">
-                          No access
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* EDIT PRODUCT MODAL */}
+      {/* ✏️ EDIT PRODUCT MODAL */}
       {isEditOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[420px]">
             <h2 className="text-xl font-bold mb-4">Edit Product</h2>
 
             <form onSubmit={handleUpdateProduct} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Product Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={editForm.name || ""}
-                  onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <input
+                type="text"
+                name="name"
+                value={editForm.name || ""}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded-lg p-2 w-full"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price (₹)
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={editForm.price || ""}
-                  onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <input
+                type="number"
+                name="price"
+                value={editForm.price || ""}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded-lg p-2 w-full"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={editForm.quantity || ""}
-                  onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <input
+                type="number"
+                name="quantity"
+                value={editForm.quantity || ""}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded-lg p-2 w-full"
+                required
+              />
 
-              <div className="flex justify-end gap-3 mt-6">
+              <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  className="px-4 py-2 border rounded-lg"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="bg-[#012471] text-white px-4 py-2 rounded-lg hover:bg-[#012471]/90 hover:shadow-md transform transition duration-150 active:scale-95"
+                  className="bg-[#012471] text-white px-4 py-2 rounded-lg hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
                 >
-                  Save Changes
+                  Save
                 </button>
               </div>
             </form>
@@ -378,7 +308,7 @@ function ProductList() {
         </div>
       )}
 
-      {/* DELETE PRODUCT MODAL */}
+      {/* 🗑️ DELETE PRODUCT MODAL */}
       {isDeleteOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[380px]">
@@ -387,13 +317,13 @@ function ProductList() {
             </h2>
 
             <p className="text-gray-700 mb-6">
-              Are you sure you want to delete this product? This action cannot be undone.
+              Are you sure you want to delete this product?
             </p>
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsDeleteOpen(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                className="px-4 py-2 border rounded-lg"
               >
                 Cancel
               </button>
