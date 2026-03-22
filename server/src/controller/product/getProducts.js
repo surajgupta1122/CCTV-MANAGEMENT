@@ -1,20 +1,34 @@
 import Product from "../../models/Product.js";
+import User from "../../models/User.js";
 
 const getProducts = async (req, res) => {
   try {
+    // Get user info
+    const user = await User.findById(req.user.id);
+    
     console.log("=" .repeat(50));
     console.log("📋 PRODUCT LIST REQUEST");
-    console.log("User ID:", req.user.id);
+    console.log("User:", user.email);
+    console.log("Role:", user.role);
     console.log("=" .repeat(50));
 
-    // ✅ Only get products created by this user
-    const products = await Product.find({ 
-      createdBy: req.user.id 
-    }).sort({ createdAt: -1 });
+    // ✅ If admin, get ALL products. If regular user, get only their products
+    let filter = {};
     
-    console.log(`📦 Found ${products.length} products for user ${req.user.id}`);
+    if (user.role !== "admin") {
+      filter = { createdBy: req.user.id };
+      console.log(`🔒 Regular user - fetching only their products`);
+    } else {
+      console.log("👑 Admin user - fetching ALL products");
+    }
+    
+    const products = await Product.find(filter)
+      .populate('createdBy', 'name email') // This shows who created each product
+      .sort({ createdAt: -1 });
+    
+    console.log(`📦 Found ${products.length} products`);
     if (products.length > 0) {
-      console.log("Products:", products.map(p => p.name).join(", "));
+      console.log("Products:", products.map(p => `${p.name} (by: ${p.createdBy?.email || 'unknown'})`).join(", "));
     }
     
     res.status(200).json(products);

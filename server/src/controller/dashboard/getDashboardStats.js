@@ -19,14 +19,20 @@ const getDashboardStats = async (req, res) => {
     console.log("User Role:", user.role);
     console.log("=" .repeat(50));
 
-    // ✅ CRITICAL: Filter by the logged-in user's ID
-    const filter = { createdBy: user._id };
+    // ✅ CRITICAL: If admin, see ALL products. If regular user, see only their own
+    let filter = {};
+    
+    if (user.role !== "admin") {
+      filter = { createdBy: user._id };
+      console.log(`🔒 Regular user - filtering by: ${user._id}`);
+    } else {
+      console.log("👑 Admin user - showing ALL products");
+    }
 
-    // Total products (only this user's products)
+    // Total products
     const totalProducts = await Product.countDocuments(filter);
-    console.log(`📦 Total products for ${user.email}: ${totalProducts}`);
 
-    // Inventory value (only this user's products)
+    // Inventory value
     const inventoryValueAgg = await Product.aggregate([
       { $match: filter },
       {
@@ -39,25 +45,24 @@ const getDashboardStats = async (req, res) => {
 
     const inventoryValue = inventoryValueAgg[0]?.totalValue || 0;
 
-    // Today's products (only this user's products)
+    // Today's products
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const todaysNew = await Product.find({
-      createdBy: user._id,
+      ...filter,
       createdAt: { $gte: today }
     }).sort({ createdAt: -1 });
 
-    // Low stock (only this user's products)
+    // Low stock
     const lowStock = await Product.countDocuments({
-      createdBy: user._id,
+      ...filter,
       quantity: { $lt: 5 }
     });
 
-    console.log(`✅ Sending dashboard data for ${user.email}`);
-    console.log(`📊 Products found: ${todaysNew.length}`);
+    console.log(`✅ Found ${totalProducts} products`);
     if (todaysNew.length > 0) {
-      console.log("Product names:", todaysNew.map(p => p.name).join(", "));
+      console.log("Products found:", todaysNew.map(p => p.name).join(", "));
     }
     console.log("=" .repeat(50));
 
