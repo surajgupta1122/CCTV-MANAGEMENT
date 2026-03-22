@@ -4,7 +4,7 @@ import refreshIcon from "../assets/icons/refresh.png";
 import filterIcon from "../assets/icons/filter.png";
 import packingListIcon from "../assets/icons/packing-list.png";
 import editIcon from "../assets/icons/edit.png";
-import deleteIcon from "../assets/icons/delete.png";
+import deleteIcon from "../assets/icons/trash.png";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
