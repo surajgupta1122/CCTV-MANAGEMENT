@@ -30,7 +30,7 @@ const addProduct = async (req, res) => {
       lens,
       poe,
       nightVision,
-      createdBy: req.user.id,
+      createdBy: req.user.id, // ✅ This saves the user ID who created the product
     });
 
     res.status(201).json(product);

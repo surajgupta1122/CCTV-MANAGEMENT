@@ -15,15 +15,18 @@ const productSchema = new mongoose.Schema(
 
     poe: { type: Boolean, default: false },
     nightVision: { type: Boolean, default: false },
-
-    // 🔐 VERY IMPORTANT (USER OWNERSHIP)
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    
+    // ✅ Important: Track who created this product
+    createdBy: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "User", 
+      required: true 
     },
   },
   { timestamps: true }
 );
+
+// ✅ Add index for better performance
+productSchema.index({ createdBy: 1, createdAt: -1 });
 
 export default mongoose.model("Product", productSchema);
