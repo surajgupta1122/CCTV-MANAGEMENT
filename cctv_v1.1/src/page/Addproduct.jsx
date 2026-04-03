@@ -79,8 +79,8 @@ function Addproduct() {
   };
 
   return (
-    <div className="transition-all duration-300 ease-in-out bg-gray-50 font-sans min-h-screen px-1 py-2">
-      <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+    <div className="transition-all duration-300 ease-in-out bg-gray-50 font-sans min-h-screen px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
         CCTV Product Form
       </h1>
 
@@ -88,7 +88,7 @@ function Addproduct() {
       {message && (
         <div className="flex justify-end mt-3">
           <div
-            className={`px-6 py-2 rounded-lg font-semibold shadow-lg
+            className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-sm sm:text-base
               ${
                 messageType === "success"
                   ? "bg-green-600 text-white"
@@ -100,25 +100,25 @@ function Addproduct() {
         </div>
       )}
 
-      <div className="mt-10 bg-white shadow-lg rounded-xl">
+      <div className="mt-4 sm:mt-6 md:mt-10 bg-white shadow-lg rounded-xl overflow-hidden">
         {/* Header */}
-        <div className="flex flex-row justify-between items-start px-4 py-5 bg-blue-100 rounded-t-xl ">
-          <h1 className="flex gap-2 items-center text-xl font-medium">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 py-4 bg-blue-100 rounded-t-xl gap-3">
+          <h1 className="flex gap-2 items-center text-lg sm:text-xl font-medium">
             <img
-              className="w-8 h-8"
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
               src={addCartIcon}
               alt="add"
             />
             Add Product
           </h1>
-          <div className="flex gap-3 mt-3 md:mt-0">
+          <div className="flex gap-3 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleClear}
-              className="bg-white flex gap-1 border-2 border-[#012471] px-3 py-1 rounded-lg text-md hover:shadow-md hover:bg-gray-100 transform transition duration-150 active:scale-95"
+              className="bg-white flex gap-1 border-2 border-[#012471] px-3 py-1.5 rounded-lg text-sm hover:shadow-md hover:bg-gray-100 transform transition duration-150 active:scale-95 flex-1 sm:flex-none justify-center"
             >
               <img
-                className="w-4 h-4 mt-1"
+                className="w-4 h-4 mt-0.5"
                 src={closeIcon}
                 alt="clear"
               />
@@ -128,10 +128,10 @@ function Addproduct() {
             <button
               type="submit"
               form="add-product-form"
-              className="flex gap-1 bg-[#012471] text-white px-3 py-1 rounded-lg text-sm md:text-base hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
+              className="flex gap-1 bg-[#012471] text-white px-3 py-1.5 rounded-lg text-sm hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95 flex-1 sm:flex-none justify-center"
             >
               <img
-                className="w-5 h-5 mt-1"
+                className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5"
                 src={bookmarkIcon}
                 alt="save"
               />
@@ -143,20 +143,20 @@ function Addproduct() {
         <form
           id="add-product-form"
           onSubmit={handleSubmit}
-          className="space-y-6 p-6 my-4"
+          className="space-y-4 sm:space-y-5 md:space-y-6 p-4 sm:p-5 md:p-6"
         >
           {/* Product Information */}
-          <h2 className="font-medium flex items-center gap-2 text-base md:text-lg">
+          <h2 className="font-medium flex items-center gap-2 text-sm sm:text-base md:text-lg">
             <img
-              className="w-6 h-6"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               src={boxIcon}
               alt="info"
             />
             Product Information
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <label className="flex flex-col text-sm md:text-base font-semibold">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+            <label className="flex flex-col text-sm sm:text-base font-semibold">
               Product Name*
               <input
                 type="text"
@@ -164,12 +164,12 @@ function Addproduct() {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="e.g., Hikvision 2MP Dome Camera"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </label>
 
-            <label className="flex flex-col text-sm md:text-base font-semibold">
+            <label className="flex flex-col text-sm sm:text-base font-semibold">
               Model Number*
               <input
                 type="text"
@@ -177,30 +177,30 @@ function Addproduct() {
                 value={form.modelNumber}
                 onChange={handleChange}
                 placeholder="e.g., DS-2CD2123G0-I"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </label>
           </div>
 
           {/* Brand & Category */}
-          <h2 className="font-medium flex items-center gap-2 text-base md:text-lg">
+          <h2 className="font-medium flex items-center gap-2 text-sm sm:text-base md:text-lg">
             <img
-              className="w-5 h-5"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               src={brandIcon}
               alt="brand"
             />
             Brand & Category
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <label className="flex flex-col text-sm md:text-base font-semibold">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+            <label className="flex flex-col text-sm sm:text-base font-semibold">
               Brand*
               <select
                 name="brand"
                 value={form.brand}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 text-sm sm:text-base"
                 required
               >
                 <option value="">Select Brand...</option>
@@ -211,13 +211,13 @@ function Addproduct() {
               </select>
             </label>
 
-            <label className="flex flex-col text-sm md:text-base font-semibold">
+            <label className="flex flex-col text-sm sm:text-base font-semibold">
               Category*
               <select
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 text-sm sm:text-base"
                 required
               >
                 <option value="">Select Category...</option>
@@ -230,22 +230,22 @@ function Addproduct() {
           </div>
 
           {/* Pricing & Inventory */}
-          <h2 className="font-medium flex items-center gap-2 text-base md:text-lg">
+          <h2 className="font-medium flex items-center gap-2 text-sm sm:text-base md:text-lg">
             <img
-              className="w-5 h-5"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               src={pricingIcon}
               alt="pricing"
             />
             Pricing & Inventory
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
             <input
               type="number"
               name="price"
               value={form.price}
               onChange={handleChange}
               placeholder="₹ 0.00"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base"
               required
             />
 
@@ -255,18 +255,18 @@ function Addproduct() {
               value={form.quantity}
               onChange={handleChange}
               placeholder="# 0"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base"
               required
             />
           </div>
 
           {/* Technical Specification */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
             <select
               name="resolution"
               value={form.resolution}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base"
             >
               <option value="">Select Resolution...</option>
               <option>1920×1080</option>
@@ -281,30 +281,30 @@ function Addproduct() {
               value={form.lens}
               onChange={handleChange}
               placeholder="eg., 2.8mm, varifocal"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base"
             />
           </div>
 
           {/* Extra Features */}
           <div className="flex flex-col space-y-3">
-            <label className="py-4 px-2 bg-blue-100 rounded-lg">
+            <label className="py-3 sm:py-4 px-3 sm:px-4 bg-blue-100 rounded-lg text-sm sm:text-base cursor-pointer">
               <input
                 type="checkbox"
                 name="poe"
                 checked={form.poe}
                 onChange={handleChange}
-                className="mr-2"
+                className="mr-2 w-4 h-4"
               />
               Power over Ethernet (PoE) Support
             </label>
 
-            <label className="py-4 px-2 bg-blue-100 rounded-lg">
+            <label className="py-3 sm:py-4 px-3 sm:px-4 bg-blue-100 rounded-lg text-sm sm:text-base cursor-pointer">
               <input
                 type="checkbox"
                 name="nightVision"
                 checked={form.nightVision}
                 onChange={handleChange}
-                className="mr-2"
+                className="mr-2 w-4 h-4"
               />
               Night Vision Capability
             </label>

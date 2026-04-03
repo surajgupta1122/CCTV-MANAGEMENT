@@ -156,40 +156,40 @@ function ProductList() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen font-sans">
-      <div className="flex justify-between items-center pr-1">
-        <h1 className="text-2xl font-bold text-gray-800 px-1 py-2">
+    <div className="bg-gray-50 min-h-screen font-sans p-3 sm:p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pr-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 px-1 py-2">
           Product List
         </h1>
         <button
           onClick={fetchProducts}
-          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition"
+          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1.5 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition w-full sm:w-auto justify-center"
         >
-          <img className="w-5 h-5 mt-1" src={refreshIcon} alt="refresh" />
+          <img className="w-5 h-5" src={refreshIcon} alt="refresh" />
           Refresh
         </button>
       </div>
 
-      <div className="mx-1 mt-8 rounded-xl shadow-md">
-        <h2 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-7 h-7" src={filterIcon} alt="filter" />
+      <div className="mt-6 sm:mt-8 rounded-xl shadow-md">
+        <h2 className="bg-blue-100 text-base sm:text-lg rounded-t-xl p-3 sm:p-4 font-semibold flex gap-2 items-center">
+          <img className="w-5 h-5 sm:w-6 sm:h-6" src={filterIcon} alt="filter" />
           Search & Filter Products
         </h2>
 
-        <div className="flex justify-between items-center py-5 px-6">
-          <div className="w-[77%]">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 py-4 sm:py-5 px-4 sm:px-6">
+          <div className="w-full sm:w-[77%]">
             <input
               type="text"
-              placeholder=" 🔍 Search products by name or category..."
-              className="border border-gray-400 rounded-lg w-full pl-2 py-2 text-sm"
+              placeholder="🔍 Search products by name or category..."
+              className="border border-gray-400 rounded-lg w-full px-3 py-2 text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
-          <div>
+          <div className="w-full sm:w-auto">
             <select
-              className="border border-gray-400 rounded-lg p-2 text-sm"
+              className="border border-gray-400 rounded-lg p-2 text-sm w-full sm:w-auto"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -207,7 +207,7 @@ function ProductList() {
       {message && (
         <div className="flex justify-end my-3">
           <div
-            className={`px-6 py-2 rounded-lg font-semibold shadow-lg transition-all
+            className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg transition-all text-sm sm:text-base
               ${
                 messageType === "success"
                   ? "bg-green-600 text-white"
@@ -219,24 +219,24 @@ function ProductList() {
         </div>
       )}
 
-      <div className="mx-1 mt-8 rounded-xl shadow-lg">
-        <h3 className="bg-blue-100 text-lg rounded-t-xl p-4 font-semibold flex gap-2">
-          <img className="w-6 h-6" src={packingListIcon} alt="products" />
+      <div className="mt-6 sm:mt-8 rounded-xl shadow-lg">
+        <h3 className="bg-blue-100 text-base sm:text-lg rounded-t-xl p-3 sm:p-4 font-semibold flex gap-2 items-center">
+          <img className="w-5 h-5 sm:w-6 sm:h-6" src={packingListIcon} alt="products" />
           Product List ({filteredProducts.length} items)
         </h3>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm font-semibold">
+          <table className="w-full text-left text-xs sm:text-sm font-semibold">
             <thead className="bg-gray-100 font-bold text-gray-600 border-b">
               <tr>
-                <th className="p-3">PRODUCT</th>
-                <th className="p-3">BRAND</th>
-                <th className="p-3">CATEGORY</th>
-                <th className="p-3">PRICE</th>
-                <th className="p-3">STOCK</th>
-                <th className="p-3">ADDED</th>
-                <th className="p-3">STATUS</th>
-                <th className="p-3">ACTION</th>
+                <th className="p-2 sm:p-3">PRODUCT</th>
+                <th className="p-2 sm:p-3">BRAND</th>
+                <th className="p-2 sm:p-3 hidden md:table-cell">CATEGORY</th>
+                <th className="p-2 sm:p-3">PRICE</th>
+                <th className="p-2 sm:p-3">STOCK</th>
+                <th className="p-2 sm:p-3 hidden lg:table-cell">ADDED</th>
+                <th className="p-2 sm:p-3">STATUS</th>
+                <th className="p-2 sm:p-3">ACTION</th>
               </tr>
             </thead>
 
@@ -256,17 +256,17 @@ function ProductList() {
               ) : (
                 filteredProducts.map((p) => (
                   <tr key={p._id} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{p.name}</td>
-                    <td className="p-3 text-gray-600">{p.brand}</td>
-                    <td className="p-3 text-gray-600">{p.category}</td>
-                    <td className="p-3">₹{p.price}</td>
-                    <td className="p-3">{p.quantity}</td>
-                    <td className="p-3 text-gray-600">
-                      {new Date(p.createdAt).toLocaleString()}
+                    <td className="p-2 sm:p-3 font-medium">{p.name}</td>
+                    <td className="p-2 sm:p-3 text-gray-600">{p.brand}</td>
+                    <td className="p-2 sm:p-3 text-gray-600 hidden md:table-cell">{p.category}</td>
+                    <td className="p-2 sm:p-3">₹{p.price}</td>
+                    <td className="p-2 sm:p-3">{p.quantity}</td>
+                    <td className="p-2 sm:p-3 text-gray-600 hidden lg:table-cell text-xs">
+                      {new Date(p.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="p-3">
+                    <td className="p-2 sm:p-3">
                       <span
-                        className={`font-medium ${
+                        className={`font-medium text-xs sm:text-sm ${
                           p.quantity > 0 ? "text-green-600" : "text-red-600"
                         }`}
                       >
@@ -274,18 +274,17 @@ function ProductList() {
                       </span>
                     </td>
                     
-                    <td className="p-3">
-                      {/* Edit and Delete buttons always show for all users */}
-                      <div className="flex gap-2">
+                    <td className="p-2 sm:p-3">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <button
                           onClick={() => openEditModal(p)}
-                          className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                          className="bg-green-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-green-600 hover:shadow-md transform transition duration-150 active:scale-95"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => openDeleteModal(p._id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                          className="bg-red-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
                         >
                           Delete
                         </button>
@@ -301,11 +300,11 @@ function ProductList() {
 
       {/* ✏️ EDIT PRODUCT MODAL */}
       {isEditOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[500px] max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl shadow-xl p-5 sm:p-6 w-full sm:w-[500px] max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">Edit Product</h2>
 
-            <form onSubmit={handleUpdateProduct} className="space-y-4">
+            <form onSubmit={handleUpdateProduct} className="space-y-3 sm:space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Product Name
@@ -315,7 +314,7 @@ function ProductList() {
                   name="name"
                   value={editForm.name || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                   required
                 />
               </div>
@@ -329,7 +328,7 @@ function ProductList() {
                   name="modelNumber"
                   value={editForm.modelNumber || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                 />
               </div>
 
@@ -341,7 +340,7 @@ function ProductList() {
                   name="brand"
                   value={editForm.brand || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                 >
                   <option value="">Select Brand...</option>
                   <option>Hikvision</option>
@@ -359,7 +358,7 @@ function ProductList() {
                   name="category"
                   value={editForm.category || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                 >
                   <option value="">Select Category...</option>
                   <option>Box Camera</option>
@@ -378,7 +377,7 @@ function ProductList() {
                   name="price"
                   value={editForm.price || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                   required
                 />
               </div>
@@ -392,7 +391,7 @@ function ProductList() {
                   name="quantity"
                   value={editForm.quantity || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                   required
                 />
               </div>
@@ -405,7 +404,7 @@ function ProductList() {
                   name="resolution"
                   value={editForm.resolution || ""}
                   onChange={handleEditChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                 >
                   <option value="">Select Resolution...</option>
                   <option>1920×1080</option>
@@ -425,11 +424,11 @@ function ProductList() {
                   value={editForm.lens || ""}
                   onChange={handleEditChange}
                   placeholder="eg., 2.8mm, varifocal"
-                  className="border border-gray-300 rounded-lg p-2 w-full"
+                  className="border border-gray-300 rounded-lg p-2 w-full text-sm"
                 />
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -457,14 +456,14 @@ function ProductList() {
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg text-sm hover:bg-gray-50"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="bg-[#012471] text-white px-4 py-2 rounded-lg hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
+                  className="bg-[#012471] text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm hover:opacity-90 hover:shadow-md transform transition duration-150 active:scale-95"
                 >
                   Save Changes
                 </button>
@@ -476,27 +475,27 @@ function ProductList() {
 
       {/* 🗑️ DELETE PRODUCT MODAL */}
       {isDeleteOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-[380px]">
-            <h2 className="text-xl font-bold mb-3 text-red-600">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl shadow-xl p-5 sm:p-6 w-[90%] sm:w-[380px]">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 text-red-600">
               Delete Product
             </h2>
 
-            <p className="text-gray-700 mb-6">
+            <p className="text-sm sm:text-base text-gray-700 mb-6">
               Are you sure you want to delete this product? This action cannot be undone.
             </p>
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsDeleteOpen(false)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg text-sm hover:bg-gray-50"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleDeleteProduct}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
+                className="bg-red-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm hover:bg-red-600 hover:shadow-md transform transition duration-150 active:scale-95"
               >
                 Yes, Delete
               </button>
