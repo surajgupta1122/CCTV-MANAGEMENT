@@ -7,11 +7,15 @@ function Cart() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
+      <div className="flex flex-col items-center justify-center text-center p-8 min-h-[95vh]">
+        <span className="text-8xl mb-4">🛒</span>
+        <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
+        <p className="text-gray-500 mb-6 text-sm sm:text-base">
+          Looks like you haven't added anything yet.
+        </p>
         <button
-          onClick={() => navigate("/products")}
-          className="mt-4 bg-[#012471] text-white px-4 py-2 rounded-lg"
+          onClick={() => navigate("/productlist")}
+          className="bg-[#012471] text-white text-lg px-6 py-2.5 rounded-xl font-semibold hover:bg-[#16213D] transition"
         >
           Browse Products
         </button>
