@@ -8,36 +8,37 @@ import Dashboard from "./page/Dashboard";
 import Addproduct from "./page/Addproduct";
 import ProductList from "./page/ProductList";
 import UserManagement from "./page/UserManagement";
+import Cart from "./page/Cart";
+import Checkout from "./page/Checkout";
 
 function App() {
   return (
     <BrowserRouter>
-  <Routes>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/addproduct" element={<Addproduct />} />
+            <Route path="/productlist" element={<ProductList />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+          </Route>
+        </Route>
 
-    {/* Protected Routes */}
-    <Route element={<ProtectedRoute />}>
-      <Route element={<DashboardLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/addproduct" element={<Addproduct />} />
-        <Route path="/productlist" element={<ProductList />} />
-      </Route>
-    </Route>
+        {/* Admin Only */}
+        <Route element={<ProtectedRoute adminOnly />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/usermanagement" element={<UserManagement />} />
+          </Route>
+        </Route>
 
-    {/* Admin Only */}
-    <Route element={<ProtectedRoute adminOnly />}>
-      <Route element={<DashboardLayout />}>
-        <Route path="/usermanagement" element={<UserManagement />} />
-      </Route>
-    </Route>
-
-    <Route path="*" element={<Navigate to="/login" />} />
-
-  </Routes>
-</BrowserRouter>
-
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

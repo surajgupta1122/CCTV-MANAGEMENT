@@ -4,10 +4,11 @@ import { getCurrentUser } from "../utils/auth";
 
 import camera from "../assets/camera.gif";
 import menuIcon from "../assets/icons/menu.png";
-import addCartIcon from "../assets/icons/add-cart.png";
+import add from "../assets/icons/add product.png";
 import userSettingIcon from "../assets/icons/user-setting.png";
 import packingListIcon from "../assets/icons/packing-list.png";
 import logoutIcon from "../assets/icons/logout.png";
+import cartIcon from "../assets/icons/cart.png"; 
 
 function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
@@ -31,7 +32,9 @@ function Sidebar({ isOpen, setIsOpen }) {
 
   const menuItems = [
     { name: "Dashboard", icon: menuIcon, path: "/dashboard" },
-    { name: "Add Product", icon: addCartIcon, path: "/addproduct" },
+    { name: "Add Product", icon: add, path: "/addproduct" },
+    { name: "Product List", icon: packingListIcon, path: "/productlist" },
+    { name: "Cart", icon: cartIcon, path: "/cart" },
     ...(isAdmin
       ? [
           {
@@ -41,7 +44,6 @@ function Sidebar({ isOpen, setIsOpen }) {
           },
         ]
       : []),
-    { name: "Product List", icon: packingListIcon, path: "/productlist" },
   ];
 
   // Logout

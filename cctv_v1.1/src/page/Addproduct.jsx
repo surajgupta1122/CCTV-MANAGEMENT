@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "../utils/axios";
 import { useNavigate } from "react-router-dom";
-import addCartIcon from "../assets/icons/add-cart.png";
+import addProductIcon from "../assets/icons/add product.png";
 import closeIcon from "../assets/icons/close.png";
 import bookmarkIcon from "../assets/icons/bookmark.png";
 import boxIcon from "../assets/icons/box.png";
@@ -105,8 +105,8 @@ function Addproduct() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 py-4 bg-blue-100 rounded-t-xl gap-3">
           <h1 className="flex gap-2 items-center text-lg sm:text-xl font-medium">
             <img
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
-              src={addCartIcon}
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-7 md:h-7"
+              src={addProductIcon}
               alt="add"
             />
             Add Product

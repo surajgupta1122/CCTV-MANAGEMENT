@@ -8,6 +8,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import productRoutes from "./src/routes/productRoutes.js";
+import orderRoutes from "./src/routes/orderRoutes.js";
 
 dotenv.config(); // MUST be before using process.env
 
@@ -22,6 +23,7 @@ app.use("/api", protectedRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", userRoutes);
 app.use("/api", productRoutes);
+app.use("/api", orderRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running 🚀");

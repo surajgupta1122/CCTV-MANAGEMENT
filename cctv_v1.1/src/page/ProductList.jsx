@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
+import { useCart } from "../context/CartContext";
 import refreshIcon from "../assets/icons/refresh.png";
 import filterIcon from "../assets/icons/filter.png";
 import packingListIcon from "../assets/icons/packing-list.png";
@@ -10,6 +11,8 @@ function ProductList() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
   const [loading, setLoading] = useState(true);
+
+  const { addToCart } = useCart();
 
   // 🎮 achievement-style message
   const [message, setMessage] = useState("");
@@ -247,6 +250,16 @@ function ProductList() {
                     </td>
                     <td className="p-2 sm:p-3">
                       <div className="flex flex-row gap-1 sm:gap-2">
+                        <button
+                          onClick={() => {
+                            addToCart(p, 1);
+                            showMessage("✔ Added to cart");
+                          }}
+                          disabled={p.quantity <= 0}
+                          className="bg-blue-600 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          Add to Cart
+                        </button>
                         <button
                           onClick={() => openEditModal(p)}
                           className="bg-green-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-green-600 transition"
