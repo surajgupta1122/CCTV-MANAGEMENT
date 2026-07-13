@@ -6,25 +6,31 @@ import barChartIcon from "../assets/icons/bar-chart.png";
 import qualityIcon from "../assets/icons/quality-control.png";
 import attentionIcon from "../assets/icons/attention.png";
 
+// 🔥 IN-MEMORY CACHE: 
+// Survives SPA page changes (like going to AddProduct and back).
+// Naturally resets to null when the user presses F5 or closes the tab.
+let memoryCacheStats = null;
+
 function Dashboard() {
-  const [stats, setStats] = useState({
-    totalProducts: 0,
-    inventoryValue: 0,
-    todaysNewCount: 0,
-    lowStock: 0,
-    todaysNew: [],
-  });
+  // Initialize state with memory cache if it exists, otherwise default values
+  const [stats, setStats] = useState(
+    memoryCacheStats || {
+      totalProducts: 0,
+      inventoryValue: 0,
+      todaysNewCount: 0,
+      lowStock: 0,
+      todaysNew: [],
+    }
+  );
 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-
-  //  message
   const [message, setMessage] = useState("");
 
   const showMessage = (text) => {
     setMessage(text);
-    setTimeout(() => setMessage(""), 1000);
+    setTimeout(() => setMessage(""), 1500);
   };
 
   const fetchDashboard = async (fromRefresh = false) => {
@@ -32,30 +38,40 @@ function Dashboard() {
       setLoading(true);
 
       const res = await axiosInstance.get("/dashboard-stats", {
-        params: { t: Date.now() }, // cache buster
+        params: { t: Date.now() },
       });
 
       setStats(res.data);
+      
+      // Cache the data in memory (Not in sessionStorage)
+      memoryCacheStats = res.data;
 
-      // 👇 after-load message
       showMessage(fromRefresh ? "✔ Dashboard refreshed" : "✔ Dashboard loaded");
     } catch (error) {
       showMessage("✖ Failed to load dashboard");
     } finally {
       setLoading(false);
+      // Clear the "productAdded" flag after fetching fresh data
+      sessionStorage.removeItem("productAdded");
     }
   };
 
   useEffect(() => {
-    fetchDashboard();
+    // 🔥 CHECK IF NEW PRODUCT WAS ADDED (Keep this in sessionStorage)
+    const hasNewProduct = sessionStorage.getItem("productAdded") === "true";
+
+    // 🔥 DECISION: Fetch fresh if no memory cache (F5/Login) OR if a product was added
+    if (!memoryCacheStats || hasNewProduct) {
+      fetchDashboard(false);
+    }
+
+    // Fetch user info
     testProtected();
   }, []);
 
   const testProtected = async () => {
     try {
       const res = await axiosInstance.get("/dashboard");
-      console.log(res.data);
-
       setUser(res.data.user);
     } catch (err) {
       console.error(err);
@@ -67,6 +83,29 @@ function Dashboard() {
       item.name.toLowerCase().includes(search.toLowerCase()) ||
       item.category.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const statsItems = [
+    {
+      label: "Total Products",
+      value: stats.totalProducts,
+      icon: boxesIcon,
+    },
+    {
+      label: "Inventory Value",
+      value: `₹${stats.inventoryValue.toLocaleString()}`,
+      icon: barChartIcon,
+    },
+    {
+      label: "Today's New",
+      value: stats.todaysNewCount,
+      icon: qualityIcon,
+    },
+    {
+      label: "Low Stock",
+      value: stats.lowStock,
+      icon: attentionIcon,
+    },
+  ];
 
   return (
     <div className="bg-gray-50 min-h-screen space-y-4 sm:space-y-6 px-4 sm:px-6 py-4 sm:py-6">
@@ -90,66 +129,76 @@ function Dashboard() {
             disabled={loading}
             className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-2 flex items-center justify-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition"
           >
-            <img
-              className="w-5 h-5"
-              src={refreshIcon}
-              alt="refresh"
-            />
+            <img className="w-5 h-5" src={refreshIcon} alt="refresh" />
             {loading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </div>
 
-      {/* 🎮 message */}
-      {message && (
-        <div className="flex justify-end">
-          <div
-            className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-white text-sm sm:text-base
-           ${message.startsWith("✖") ? "bg-red-600" : "bg-green-600"}
-          `}
-          >
-            {message}
-          </div>
+      {/* Smooth Slide + Fade for Notification */}
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          message ? "max-h-40 opacity-100 mb-0" : "max-h-0 opacity-0 -mb-4"
+        }`}
+      >
+        <div
+          className={`flex justify-end transition-all duration-500 ease-in-out ${
+            message
+              ? "max-h-40 opacity-100 scale-100"
+              : "max-h-0 opacity-0 scale-95"
+          }`}
+        >
+          {message && (
+            <div
+              className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-white text-sm sm:text-base
+                ${message.startsWith("✖") ? "bg-red-600" : "bg-green-600"}
+              `}
+            >
+              {message}
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Stats Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          {
-            label: "Total Products",
-            value: stats.totalProducts,
-            icon: boxesIcon,
-          },
-          {
-            label: "Inventory Value",
-            value: `₹${stats.inventoryValue.toLocaleString()}`,
-            icon: barChartIcon,
-          },
-          {
-            label: "Today's New",
-            value: stats.todaysNewCount,
-            icon: qualityIcon,
-          },
-          { label: "Low Stock", value: stats.lowStock, icon: attentionIcon },
-        ].map((item) => (
+        {statsItems.map((item) => (
           <div
             key={item.label}
-            className="bg-white shadow-md rounded-lg p-3 sm:p-4 hover:scale-105 transition flex items-center gap-3 sm:block"
+            className="bg-white shadow-md rounded-lg p-3 sm:p-4 flex items-center gap-3 sm:block"
           >
-            <img
-              className="w-12 sm:w-[47%] sm:mb-2"
-              src={item.icon}
-              alt={item.label}
-            />
-            <div className="flex-1 sm:text-left">
-              <p className="text-sm sm:text-lg text-gray-600 font-bold sm:mt-2">{item.label}</p>
-              <h3 className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">{item.value}</h3>
-            </div>
+            {loading ? (
+              <div className="w-full">
+                <div className="w-12 sm:w-[47%] sm:mb-2">
+                  <div className="bg-gray-200 rounded-lg h-12 w-12 sm:h-auto sm:w-full aspect-square animate-pulse" />
+                </div>
+                <div className="flex-1 sm:text-left">
+                  <div className="h-4 bg-gray-200 rounded w-20 sm:w-3/4 mb-2 animate-pulse" />
+                  <div className="h-6 bg-gray-200 rounded w-12 sm:w-1/2 animate-pulse" />
+                </div>
+              </div>
+            ) : (
+              <>
+                <img
+                  className="w-12 sm:w-[47%] sm:mb-2"
+                  src={item.icon}
+                  alt={item.label}
+                />
+                <div className="flex-1 sm:text-left">
+                  <p className="text-sm sm:text-lg text-gray-600 font-bold sm:mt-2">
+                    {item.label}
+                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">
+                    {item.value}
+                  </h3>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
 
+      {/* User info */}
       {user && (
         <div className="bg-blue-100 p-3 rounded-lg text-sm sm:text-base">
           👤 Logged in as: {user.email || user.id}
@@ -174,20 +223,28 @@ function Dashboard() {
                 <th className="px-2 sm:px-3 py-2 sm:py-3">Status</th>
               </tr>
             </thead>
-
             <tbody>
-              {filteredProducts.map((item) => (
-                <tr key={item._id} className="border-t hover:bg-gray-50">
-                  <td className="px-2 sm:px-3 py-2 sm:py-3">{item.name}</td>
-                  <td className="px-2 sm:px-3 py-2 sm:py-3">{item.category}</td>
-                  <td className="px-2 sm:px-3 py-2 sm:py-3">₹{item.price}</td>
-                  <td className="px-2 sm:px-3 py-2 sm:py-3 text-green-600 font-medium">
-                    {item.quantity > 0 ? "In Stock" : "Out of Stock"}
+              {loading ? (
+                <tr>
+                  <td colSpan="4" className="p-8 text-center text-gray-500">
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#012471]"></div>
+                      Loading products...
+                    </div>
                   </td>
                 </tr>
-              ))}
-
-              {filteredProducts.length === 0 && (
+              ) : filteredProducts.length > 0 ? (
+                filteredProducts.map((item) => (
+                  <tr key={item._id} className="border-t hover:bg-gray-50">
+                    <td className="px-2 sm:px-3 py-2 sm:py-3">{item.name}</td>
+                    <td className="px-2 sm:px-3 py-2 sm:py-3">{item.category}</td>
+                    <td className="px-2 sm:px-3 py-2 sm:py-3">₹{item.price}</td>
+                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-green-600 font-medium">
+                      {item.quantity > 0 ? "In Stock" : "Out of Stock"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
                   <td colSpan="4" className="px-2 sm:px-3 py-2 sm:py-3 text-center text-gray-500">
                     No matching products
