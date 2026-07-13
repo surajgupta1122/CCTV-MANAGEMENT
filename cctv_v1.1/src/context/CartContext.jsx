@@ -1,16 +1,37 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { getCurrentUser } from "../utils/auth";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem("cart");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [userId, setUserId] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
+  // Load current user, then load THEIR cart
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+    const init = async () => {
+      const user = await getCurrentUser();
+      const id = user?._id || user?.id || null;
+      setUserId(id);
+
+      if (id) {
+        const saved = localStorage.getItem(`cart_${id}`);
+        setCartItems(saved ? JSON.parse(saved) : []);
+      } else {
+        setCartItems([]);
+      }
+      setLoaded(true);
+    };
+    init();
+  }, []);
+
+  // Save cart under the current user's key whenever it changes
+  useEffect(() => {
+    if (loaded && userId) {
+      localStorage.setItem(`cart_${userId}`, JSON.stringify(cartItems));
+    }
+  }, [cartItems, userId, loaded]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems((prev) => {
