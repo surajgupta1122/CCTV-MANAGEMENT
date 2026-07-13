@@ -33,7 +33,7 @@ function Login() {
       // localStorage.setItem("user", JSON.stringify(res.data.user));
 
       // ✅ REDIRECT
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
