@@ -8,7 +8,7 @@ import add from "../assets/icons/add product.png";
 import userSettingIcon from "../assets/icons/user-setting.png";
 import packingListIcon from "../assets/icons/packing-list.png";
 import logoutIcon from "../assets/icons/logout.png";
-import cartIcon from "../assets/icons/cart.png"; 
+import cartIcon from "../assets/icons/cart.png";
 
 function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
@@ -53,8 +53,34 @@ function Sidebar({ isOpen, setIsOpen }) {
     window.location.reload();
   };
 
-  // Optional: prevent flicker before user loads
-  if (loading) return null;
+  // 🦴 Skeleton loader while user data loads
+  if (loading) {
+    return (
+      <aside
+        className={`fixed h-screen bg-white border-r-2 border-gray-300 flex flex-col z-50
+        w-[15%] sm:w-[12%] md:w-[9%]`}
+      >
+        {/* Header skeleton */}
+        <div className="flex items-center justify-center border-b-2 border-gray-300 p-3 sm:p-4">
+          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gray-200 animate-pulse" />
+        </div>
+
+        {/* Menu item skeletons */}
+        <ul className="mt-4 flex-1 p-2 sm:p-3 space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <li key={i} className="flex justify-center">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-lg bg-gray-200 animate-pulse" />
+            </li>
+          ))}
+        </ul>
+
+        {/* Logout skeleton */}
+        <div className="p-3 sm:p-4 border-t-2 border-gray-300 flex justify-center">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gray-200 animate-pulse" />
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <>
