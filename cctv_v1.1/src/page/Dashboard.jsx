@@ -135,10 +135,10 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Smooth Slide + Fade for Notification */}
+      {/* 🔥 SMOOTH NOTIFICATION – same as AddProduct */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          message ? "max-h-40 opacity-100 mb-0" : "max-h-0 opacity-0 -mb-4"
+          message ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div
@@ -148,15 +148,14 @@ function Dashboard() {
               : "max-h-0 opacity-0 scale-95"
           }`}
         >
-          {message && (
-            <div
-              className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-white text-sm sm:text-base
-                ${message.startsWith("✖") ? "bg-red-600" : "bg-green-600"}
-              `}
-            >
-              {message}
-            </div>
-          )}
+          <div
+            className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-white text-sm sm:text-base
+              ${message.startsWith("✖") ? "bg-red-600" : "bg-green-600"}
+              transition-all duration-500 ease-in-out
+              ${message ? "opacity-100" : "opacity-0"}`}
+          >
+            {message}
+          </div>
         </div>
       </div>
 

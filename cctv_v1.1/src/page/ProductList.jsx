@@ -14,26 +14,22 @@ function ProductList() {
 
   const { addToCart } = useCart();
 
-  // 🎮 achievement-style message
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
 
-  // 🔹 edit modal
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  // delete modal
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
 
   const showMessage = (text, type = "success") => {
     setMessage(text);
     setMessageType(type);
-    setTimeout(() => setMessage(""), 1000);
+    setTimeout(() => setMessage(""), 1500);
   };
 
-  // Fetch products
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -53,10 +49,8 @@ function ProductList() {
     fetchProducts();
   }, []);
 
-  // Search & filter
   useEffect(() => {
     let data = [...products];
-
     if (search) {
       data = data.filter(
         (p) =>
@@ -64,15 +58,12 @@ function ProductList() {
           p.category?.toLowerCase().includes(search.toLowerCase())
       );
     }
-
     if (category !== "All Categories") {
       data = data.filter((p) => p.category === category);
     }
-
     setFilteredProducts(data);
   }, [search, category, products]);
 
-  // ---------------- EDIT ----------------
   const openEditModal = (product) => {
     setSelectedProduct(product);
     setEditForm({
@@ -85,22 +76,21 @@ function ProductList() {
       resolution: product.resolution || "",
       lens: product.lens || "",
       poe: product.poe || false,
-      nightVision: product.nightVision || false
+      nightVision: product.nightVision || false,
     });
     setIsEditOpen(true);
   };
 
   const handleEditChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setEditForm({ 
-      ...editForm, 
-      [name]: type === "checkbox" ? checked : value 
+    setEditForm({
+      ...editForm,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
-
     try {
       const res = await axios.put(`/products/${selectedProduct._id}`, editForm);
       setProducts(products.map((p) => (p._id === selectedProduct._id ? res.data : p)));
@@ -111,7 +101,6 @@ function ProductList() {
     }
   };
 
-  // ---------------- DELETE ----------------
   const openDeleteModal = (id) => {
     setDeleteProductId(id);
     setIsDeleteOpen(true);
@@ -128,33 +117,29 @@ function ProductList() {
     }
   };
 
-  // Get unique categories for filter
-  const categories = ["All Categories", ...new Set(products.map(p => p.category).filter(Boolean))];
+  const categories = ["All Categories", ...new Set(products.map((p) => p.category).filter(Boolean))];
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans p-3 sm:p-4 md:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Product List
-        </h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Product List</h1>
         <button
           onClick={fetchProducts}
           disabled={loading}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1.5 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition w-full sm:w-auto justify-center"
         >
           <img className="w-4 h-4 sm:w-5 sm:h-5" src={refreshIcon} alt="refresh" />
-          {loading ? "Loading..." : "Refresh"}
+          {loading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
       {/* Search & Filter */}
-      <div className="rounded-xl shadow-md bg-white">
+      <div className="rounded-xl shadow-md bg-white mb-2">
         <h2 className="bg-blue-100 text-base sm:text-lg rounded-t-xl p-3 sm:p-4 font-semibold flex gap-2 items-center">
           <img className="w-5 h-5 sm:w-6 sm:h-6" src={filterIcon} alt="filter" />
           Search & Filter Products
         </h2>
-
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 py-4 sm:py-5 px-4 sm:px-6">
           <div className="w-full sm:flex-1">
             <input
@@ -165,34 +150,47 @@ function ProductList() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
           <div className="w-full sm:w-48">
             <select
               className="border border-gray-300 rounded-lg p-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#012471]"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
         </div>
       </div>
 
-      {/* Message */}
-      {message && (
-        <div className="flex justify-end my-3">
+      {/* 🔥 SMOOTH NOTIFICATION – Always rendered, hidden with classes */}
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          message ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div
+          className={`flex justify-end transition-all duration-500 ease-in-out ${
+            message
+              ? "max-h-40 opacity-100 scale-100"
+              : "max-h-0 opacity-0 scale-95"
+          }`}
+        >
           <div
             className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-sm sm:text-base
-              ${messageType === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}
+              ${messageType === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"}
+              transition-all duration-500 ease-in-out
+              ${message ? "opacity-100" : "opacity-0"}`}
           >
             {message}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Product Table */}
+      {/* Product Table – spacing now stays perfect */}
       <div className="mt-6 rounded-xl shadow-lg bg-white">
         <h3 className="bg-blue-100 text-base sm:text-lg rounded-t-xl p-3 sm:p-4 font-semibold flex gap-2 items-center">
           <img className="w-5 h-5 sm:w-6 sm:h-6" src={packingListIcon} alt="products" />
@@ -213,7 +211,6 @@ function ProductList() {
                 <th className="p-2 sm:p-3">ACTION</th>
               </tr>
             </thead>
-
             <tbody>
               {loading ? (
                 <tr>
@@ -242,9 +239,13 @@ function ProductList() {
                       {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "N/A"}
                     </td>
                     <td className="p-2 sm:p-3">
-                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                        p.quantity > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                          p.quantity > 0
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
                         {p.quantity > 0 ? "In Stock" : "Out of Stock"}
                       </span>
                     </td>
@@ -287,7 +288,6 @@ function ProductList() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-xl shadow-xl p-5 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#012471]">Edit Product</h2>
-
             <form onSubmit={handleUpdateProduct} className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
@@ -300,7 +300,6 @@ function ProductList() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Model Number</label>
                 <input
@@ -311,7 +310,6 @@ function ProductList() {
                   className="border border-gray-300 rounded-lg p-2 w-full text-sm focus:ring-2 focus:ring-[#012471] focus:border-transparent"
                 />
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
@@ -328,7 +326,6 @@ function ProductList() {
                     <option>Other</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                   <select
@@ -345,7 +342,6 @@ function ProductList() {
                   </select>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
@@ -358,7 +354,6 @@ function ProductList() {
                     required
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
                   <input
@@ -371,7 +366,6 @@ function ProductList() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Resolution</label>
@@ -388,7 +382,6 @@ function ProductList() {
                     <option>Other</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Lens</label>
                   <input
@@ -401,7 +394,6 @@ function ProductList() {
                   />
                 </div>
               </div>
-
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <label className="flex items-center gap-2 text-sm">
                   <input
@@ -413,7 +405,6 @@ function ProductList() {
                   />
                   Power over Ethernet (PoE)
                 </label>
-
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -425,7 +416,6 @@ function ProductList() {
                   Night Vision
                 </label>
               </div>
-
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
@@ -450,9 +440,7 @@ function ProductList() {
       {isDeleteOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-xl shadow-xl p-5 sm:p-6 w-full max-w-sm">
-            <h2 className="text-lg sm:text-xl font-bold mb-3 text-red-600">
-              Delete Product
-            </h2>
+            <h2 className="text-lg sm:text-xl font-bold mb-3 text-red-600">Delete Product</h2>
             <p className="text-sm sm:text-base text-gray-700 mb-6">
               Are you sure you want to delete this product? This action cannot be undone.
             </p>

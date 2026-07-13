@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import refreshIcon from "../assets/icons/refresh.png";
 
+// 🔥 In-memory flag – survives SPA navigation, resets on browser refresh
+let hasLoadedOnce = false;
+
 function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +15,7 @@ function UserManagement() {
   const showMessage = (text, type = "success") => {
     setMessage(text);
     setMessageType(type);
-    setTimeout(() => setMessage(""), 1000);
+    setTimeout(() => setMessage(""), 1500);
   };
 
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -24,21 +27,30 @@ function UserManagement() {
   const [deleteUserId, setDeleteUserId] = useState(null);
 
   // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = async (fromRefresh = false) => {
     try {
       setLoading(true);
       const res = await axios.get("/users");
       setUsers(res.data);
-      showMessage("✔ Users loaded");
+      showMessage(fromRefresh ? "✔ Users refreshed" : "✔ Users loaded");
     } catch {
       showMessage("✖ Unable to load users", "error");
     } finally {
       setLoading(false);
+      if (!hasLoadedOnce) {
+        hasLoadedOnce = true;
+      }
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    // If this is the first visit or browser refresh, show spinner
+    if (!hasLoadedOnce) {
+      fetchUsers(false);
+    } else {
+      // Already loaded – fetch silently (still shows spinner)
+      fetchUsers(false);
+    }
   }, []);
 
   // EDIT
@@ -84,7 +96,7 @@ function UserManagement() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-3 sm:p-4 md:p-6">
+    <div className="bg-gray-50 min-h-screen p-3 ">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 sm:mb-6 md:mb-7">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
@@ -92,48 +104,70 @@ function UserManagement() {
         </h1>
 
         <button
-          onClick={fetchUsers}
-          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1.5 flex items-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition w-full sm:w-auto justify-center"
+          onClick={() => fetchUsers(true)}
+          disabled={loading}
+          className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1.5 flex items-center gap-2 text-sm hover:bg-[#012471] hover:text-white transition w-full sm:w-auto justify-center disabled:opacity-50"
         >
           <img className="w-5 h-5" src={refreshIcon} alt="refresh" />
-          Refresh
+          {loading ? "Loading..." : "Refresh"}
         </button>
       </div>
 
-      {/* Message */}
-      {message && (
-        <div className="flex justify-end mb-3">
+      {/* 🔥 Smooth Notification */}
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          message ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div
+          className={`flex justify-end transition-all duration-500 ease-in-out ${
+            message
+              ? "max-h-40 opacity-100 scale-100"
+              : "max-h-0 opacity-0 scale-95"
+          }`}
+        >
           <div
-            className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-sm sm:text-base ${
-              messageType === "success"
-                ? "bg-green-600 text-white"
-                : "bg-red-600 text-white"
-            }`}
+            className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow-lg text-sm sm:text-base
+              ${messageType === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"}
+              transition-all duration-500 ease-in-out
+              ${message ? "opacity-100" : "opacity-0"}`}
           >
             {message}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Table */}
-      {loading ? (
-        <div className="text-center py-8 text-gray-500">Loading users...</div>
-      ) : users.length === 0 ? (
-        <div className="text-center py-8 text-red-500">No users found</div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-xl overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-[#012471] text-white">
-              <tr>
-                <th className="p-2 sm:p-3 text-sm sm:text-base">#</th>
-                <th className="p-2 sm:p-3 text-sm sm:text-base">Name</th>
-                <th className="p-2 sm:p-3 text-sm sm:text-base">Email</th>
-                <th className="p-2 sm:p-3 text-sm sm:text-base">Action</th>
-              </tr>
-            </thead>
+      <div className="bg-white rounded-xl shadow-xl overflow-x-auto mt-2 sm:mt-3 md:mt-4">
+        <table className="w-full text-left">
+          <thead className="bg-[#012471] text-white">
+            <tr>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">#</th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">Name</th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">Email</th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">Action</th>
+            </tr>
+          </thead>
 
-            <tbody>
-              {users.map((user, index) => (
+          <tbody>
+            {loading ? (
+              // 🔄 Spinner loading – same for both first load and refresh
+              <tr>
+                <td colSpan="4" className="p-8 text-center text-gray-500">
+                  <div className="flex justify-center items-center gap-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#012471]"></div>
+                    Loading users...
+                  </div>
+                </td>
+              </tr>
+            ) : users.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="p-8 text-center text-gray-500">
+                  No users found
+                </td>
+              </tr>
+            ) : (
+              users.map((user, index) => (
                 <tr key={user._id} className="border-b hover:bg-gray-50">
                   <td className="px-2 sm:px-3 py-2 text-sm">{index + 1}</td>
                   <td className="px-2 sm:px-3 py-2 text-sm sm:text-base">{user.name}</td>
@@ -142,7 +176,6 @@ function UserManagement() {
                   {/* ACTION BUTTONS */}
                   <td className="px-2 sm:px-3 py-2">
                     <div className="flex flex-col sm:flex-row gap-2">
-                      {/* Edit */}
                       <button
                         onClick={() => openEditModal(user)}
                         className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs sm:text-sm hover:bg-green-600 hover:shadow-md transition"
@@ -150,7 +183,6 @@ function UserManagement() {
                         Edit
                       </button>
 
-                      {/* Delete */}
                       <button
                         onClick={() => openDeleteModal(user._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs sm:text-sm hover:bg-red-600 hover:shadow-md transition"
@@ -158,13 +190,13 @@ function UserManagement() {
                         Delete
                       </button>
                     </div>
-                   </td>
-                 </tr>
-              ))}
-            </tbody>
-           </table>
-        </div>
-      )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* EDIT MODAL */}
       {isEditOpen && (
@@ -177,7 +209,7 @@ function UserManagement() {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="border rounded-lg p-2 w-full text-sm sm:text-base"
+                className="border rounded-lg p-2 w-full text-sm sm:text-base focus:ring-2 focus:ring-[#012471] focus:border-transparent"
                 required
               />
 
@@ -185,7 +217,7 @@ function UserManagement() {
                 type="email"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
-                className="border rounded-lg p-2 w-full text-sm sm:text-base"
+                className="border rounded-lg p-2 w-full text-sm sm:text-base focus:ring-2 focus:ring-[#012471] focus:border-transparent"
                 required
               />
 
@@ -193,14 +225,14 @@ function UserManagement() {
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg text-sm sm:text-base"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg text-sm sm:text-base hover:bg-gray-50 transition"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="bg-[#012471] text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base"
+                  className="bg-[#012471] text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base hover:bg-[#0a2a8a] transition"
                 >
                   Save
                 </button>
@@ -225,14 +257,14 @@ function UserManagement() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsDeleteOpen(false)}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg text-sm sm:text-base"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 border rounded-lg text-sm sm:text-base hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleDeleteUser}
-                className="bg-red-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base"
+                className="bg-red-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base hover:bg-red-600 transition"
               >
                 Yes, Delete
               </button>
