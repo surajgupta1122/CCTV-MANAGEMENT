@@ -99,10 +99,10 @@ function Sidebar({ isOpen, setIsOpen }) {
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-gray-300 p-3 sm:p-4">
-          <div className="flex items-center space-x-2">
-            <img src={camera} alt="CCTV" className="h-8 w-10 sm:h-10 sm:w-12" />
+          <div className="flex items-center space-x-2">            <img src={camera} alt="CCTV" className={`h-8 w-10 ${!isOpen && 'md:hidden lg:inline-block'} lg:h-10 lg:w-12`} />
+
             {isOpen && (
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[#012471]">
+              <h1 className="text-lg md:text-lg lg:text-2xl font-bold text-[#012471]">
                 CCTV Manager
               </h1>
             )}
@@ -110,7 +110,7 @@ function Sidebar({ isOpen, setIsOpen }) {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-2xl sm:text-3xl font-bold text-[#012471] hover:scale-110 duration-300"
+            className="text-2xl md:text-xl lg:text-3xl font-bold text-[#012471] hover:scale-110 duration-300"
           >
             {isOpen ? "❮" : "❯"}
           </button>
@@ -126,7 +126,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   if (window.innerWidth < 768) setIsOpen(false);
                 }}
                 className={({ isActive }) =>
-                  `flex items-center p-3 sm:p-4 rounded-xl hover:bg-blue-100 hover:text-blue-900 hover:scale-105 duration-300
+                  `flex items-center p-3 md:py-2 px-1 lg:p-4 rounded-xl hover:bg-blue-100 hover:text-blue-900 hover:scale-105 duration-300
                   ${
                     isActive
                       ? "bg-blue-100 font-bold text-blue-900"
@@ -145,7 +145,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                     className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9"
                   />
                   {isOpen && (
-                    <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-xl">
+                    <span className="ml-3 sm:ml-4 text-sm md:text-md lg:text-xl">
                       {item.name}
                     </span>
                   )}
