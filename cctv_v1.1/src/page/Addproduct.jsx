@@ -100,7 +100,7 @@ function Addproduct() {
 
   return (
     <div className="transition-all duration-300 ease-in-out bg-gray-50 font-sans min-h-screen px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
-      <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-2">
         CCTV Product Form
       </h1>
 

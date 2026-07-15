@@ -54,7 +54,6 @@ function Checkout() {
   };
 
   useEffect(() => {
-    // If this is the first visit or browser refresh, show spinner
     if (!hasLoadedOnce) {
       const timer = setTimeout(() => {
         setPageLoading(false);
@@ -66,7 +65,7 @@ function Checkout() {
     }
   }, []);
 
-  // 🔄 Loading spinner on first load / refresh
+  // 🔄 Loading spinner
   if (pageLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh]">
@@ -79,7 +78,7 @@ function Checkout() {
   // ✅ Success state
   if (success) {
     return (
-      <div className="flex flex-col items-center justify-center text-center p-8 min-h-[80vh] animate-fadeIn">
+      <div className="flex flex-col items-center justify-center text-center p-6 sm:p-8 min-h-[80vh] animate-fadeIn">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
           <svg
             className="w-12 h-12 text-green-600"
@@ -95,10 +94,12 @@ function Checkout() {
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-green-600 mb-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-green-600 mb-2">
           ✔ Order placed successfully!
         </h2>
-        <p className="text-gray-600">Redirecting you back to products...</p>
+        <p className="text-gray-600 text-sm sm:text-base">
+          Redirecting you back to products...
+        </p>
         <div className="mt-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#012471] mx-auto"></div>
         </div>
@@ -109,7 +110,7 @@ function Checkout() {
   // 🛒 Empty cart
   if (cartItems.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center text-center p-8 min-h-[80vh]">
+      <div className="flex flex-col items-center justify-center text-center p-6 sm:p-8 min-h-[80vh]">
         <span className="text-8xl mb-4">🛒</span>
         <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
         <p className="text-gray-500 mb-6 text-sm sm:text-base">
@@ -117,7 +118,7 @@ function Checkout() {
         </p>
         <button
           onClick={() => navigate("/productlist")}
-          className="bg-[#012471] text-white text-lg px-6 py-2.5 rounded-xl font-semibold hover:bg-[#16213D] transition"
+          className="bg-[#012471] text-white text-base sm:text-lg px-6 py-2.5 rounded-xl font-semibold hover:bg-[#16213D] transition"
         >
           Browse Products
         </button>
@@ -126,10 +127,10 @@ function Checkout() {
   }
 
   return (
-    <div className="p-4 sm:p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+    <div className="p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Checkout</h1>
 
-      {/* 🔥 Smooth Notification */}
+      {/* 🔥 Smooth Notification – stays at top */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
           message ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
@@ -154,37 +155,46 @@ function Checkout() {
       </div>
 
       {/* Order Summary */}
-      <div className="bg-white rounded-xl shadow-md p-5 sm:p-6 space-y-3">
-        <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider mb-2">
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-3">
+        <h2 className="font-semibold text-gray-700 text-xs sm:text-sm uppercase tracking-wider mb-2">
           Order Summary
         </h2>
-        {cartItems.map((item) => (
-          <div key={item._id} className="flex justify-between text-sm sm:text-base py-1">
-            <span className="text-gray-700">
-              {item.name} <span className="text-gray-400">× {item.quantity}</span>
-            </span>
-            <span className="font-semibold">₹{item.price * item.quantity}</span>
-          </div>
-        ))}
+
+        <div className="divide-y divide-gray-100">
+          {cartItems.map((item) => (
+            <div
+              key={item._id}
+              className="flex justify-between items-center py-2 sm:py-3 text-sm sm:text-base"
+            >
+              <span className="text-gray-700 flex-1">
+                <span className="font-medium">{item.name}</span>
+                <span className="text-gray-400 ml-1">× {item.quantity}</span>
+              </span>
+              <span className="font-semibold ml-4">₹{item.price * item.quantity}</span>
+            </div>
+          ))}
+        </div>
 
         <div className="border-t pt-3 mt-2 flex justify-between items-center">
-          <span className="text-lg font-bold">Total</span>
-          <span className="text-lg font-bold text-[#012471]">₹{totalPrice}</span>
+          <span className="text-base sm:text-lg font-bold">Total</span>
+          <span className="text-base sm:text-lg font-bold text-[#012471]">
+            ₹{totalPrice}
+          </span>
         </div>
       </div>
 
-      {/* Error message (fallback if notification doesn't show) */}
+      {/* Error fallback */}
       {error && !message && (
         <p className="text-red-600 text-sm mt-3 bg-red-50 p-3 rounded-lg border border-red-200">
           {error}
         </p>
       )}
 
-      {/* Pay Button */}
+      {/* Pay Button – full width on mobile */}
       <button
         onClick={handlePayNow}
         disabled={processing}
-        className="mt-6 w-full bg-[#012471] text-white py-3 rounded-lg font-bold hover:bg-[#16213D] transition disabled:opacity-50 disabled:cursor-not-allowed relative"
+        className="mt-6 w-full bg-[#012471] text-white py-3 sm:py-3.5 rounded-lg font-bold hover:bg-[#16213D] transition disabled:opacity-50 disabled:cursor-not-allowed relative text-base sm:text-lg"
       >
         {processing ? (
           <span className="flex items-center justify-center gap-3">
