@@ -55,7 +55,7 @@ function ProductList() {
       data = data.filter(
         (p) =>
           p.name?.toLowerCase().includes(search.toLowerCase()) ||
-          p.category?.toLowerCase().includes(search.toLowerCase())
+          p.category?.toLowerCase().includes(search.toLowerCase()),
       );
     }
     if (category !== "All Categories") {
@@ -93,11 +93,16 @@ function ProductList() {
     e.preventDefault();
     try {
       const res = await axios.put(`/products/${selectedProduct._id}`, editForm);
-      setProducts(products.map((p) => (p._id === selectedProduct._id ? res.data : p)));
+      setProducts(
+        products.map((p) => (p._id === selectedProduct._id ? res.data : p)),
+      );
       setIsEditOpen(false);
       showMessage("✔ Product updated");
     } catch (error) {
-      showMessage(error.response?.data?.message || "✖ Failed to update product", "error");
+      showMessage(
+        error.response?.data?.message || "✖ Failed to update product",
+        "error",
+      );
     }
   };
 
@@ -113,23 +118,35 @@ function ProductList() {
       setIsDeleteOpen(false);
       showMessage("✔ Product deleted");
     } catch (error) {
-      showMessage(error.response?.data?.message || "✖ Failed to delete product", "error");
+      showMessage(
+        error.response?.data?.message || "✖ Failed to delete product",
+        "error",
+      );
     }
   };
 
-  const categories = ["All Categories", ...new Set(products.map((p) => p.category).filter(Boolean))];
+  const categories = [
+    "All Categories",
+    ...new Set(products.map((p) => p.category).filter(Boolean)),
+  ];
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans p-3 sm:p-4 md:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Product List</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+          Product List
+        </h1>
         <button
           onClick={fetchProducts}
           disabled={loading}
           className="border-2 border-[#012471] font-semibold rounded-lg px-3 py-1.5 flex items-center gap-1 text-sm hover:bg-[#012471] hover:text-white transition w-full sm:w-auto justify-center"
         >
-          <img className="w-4 h-4 sm:w-5 sm:h-5" src={refreshIcon} alt="refresh" />
+          <img
+            className="w-4 h-4 sm:w-5 sm:h-5"
+            src={refreshIcon}
+            alt="refresh"
+          />
           {loading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
@@ -137,7 +154,11 @@ function ProductList() {
       {/* Search & Filter */}
       <div className="rounded-xl shadow-md bg-white mb-2">
         <h2 className="bg-blue-100 text-base sm:text-lg rounded-t-xl p-3 sm:p-4 font-semibold flex gap-2 items-center">
-          <img className="w-5 h-5 sm:w-6 sm:h-6" src={filterIcon} alt="filter" />
+          <img
+            className="w-5 h-5 sm:w-6 sm:h-6"
+            src={filterIcon}
+            alt="filter"
+          />
           Search & Filter Products
         </h2>
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 py-4 sm:py-5 px-4 sm:px-6">
@@ -193,7 +214,11 @@ function ProductList() {
       {/* Product Table – spacing now stays perfect */}
       <div className="mt-6 rounded-xl shadow-lg bg-white">
         <h3 className="bg-blue-100 text-base sm:text-lg rounded-t-xl p-3 sm:p-4 font-semibold flex gap-2 items-center">
-          <img className="w-5 h-5 sm:w-6 sm:h-6" src={packingListIcon} alt="products" />
+          <img
+            className="w-5 h-5 sm:w-6 sm:h-6"
+            src={packingListIcon}
+            alt="products"
+          />
           Product List ({filteredProducts.length} items)
         </h3>
 
@@ -229,14 +254,29 @@ function ProductList() {
                 </tr>
               ) : (
                 filteredProducts.map((p) => (
-                  <tr key={p._id} className="border-t hover:bg-gray-50 transition">
-                    <td className="p-2 sm:p-3 font-medium">{p.name || "N/A"}</td>
-                    <td className="p-2 sm:p-3 text-gray-600 hidden sm:table-cell">{p.brand || "N/A"}</td>
-                    <td className="p-2 sm:p-3 text-gray-600 hidden md:table-cell">{p.category || "N/A"}</td>
-                    <td className="p-2 sm:p-3 font-semibold text-blue-600">₹{p.price || 0}</td>
-                    <td className="p-2 sm:p-3 hidden sm:table-cell">{p.quantity || 0}</td>
+                  <tr
+                    key={p._id}
+                    className="border-t hover:bg-gray-50 transition"
+                  >
+                    <td className="p-2 sm:p-3 font-medium">
+                      {p.name || "N/A"}
+                    </td>
+                    <td className="p-2 sm:p-3 text-gray-600 hidden sm:table-cell">
+                      {p.brand || "N/A"}
+                    </td>
+                    <td className="p-2 sm:p-3 text-gray-600 hidden md:table-cell">
+                      {p.category || "N/A"}
+                    </td>
+                    <td className="p-2 sm:p-3 font-semibold text-blue-600">
+                      ₹{p.price || 0}
+                    </td>
+                    <td className="p-2 sm:p-3 hidden sm:table-cell">
+                      {p.quantity || 0}
+                    </td>
                     <td className="p-2 sm:p-3 text-gray-500 hidden lg:table-cell text-xs">
-                      {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "N/A"}
+                      {p.createdAt
+                        ? new Date(p.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </td>
                     <td className="p-2 sm:p-3">
                       <span
@@ -250,26 +290,26 @@ function ProductList() {
                       </span>
                     </td>
                     <td className="p-2 sm:p-3">
-                      <div className="flex flex-row gap-1 sm:gap-2">
+                      <div className="flex flex-col gap-1 lg:flex-row lg:gap-2">
                         <button
                           onClick={() => {
                             addToCart(p, 1);
                             showMessage("✔ Added to cart");
                           }}
                           disabled={p.quantity <= 0}
-                          className="bg-blue-600 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-full lg:w-auto bg-blue-600 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           Add to Cart
                         </button>
                         <button
                           onClick={() => openEditModal(p)}
-                          className="bg-green-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-green-600 transition"
+                          className="w-full lg:w-auto bg-green-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-green-600 transition"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => openDeleteModal(p._id)}
-                          className="bg-red-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-red-600 transition"
+                          className="w-full lg:w-auto bg-red-500 text-white px-2 sm:px-3 py-1 rounded-lg text-xs hover:bg-red-600 transition"
                         >
                           Delete
                         </button>
@@ -287,10 +327,14 @@ function ProductList() {
       {isEditOpen && selectedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-xl shadow-xl p-5 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#012471]">Edit Product</h2>
+            <h2 className="text-lg sm:text-xl font-bold mb-4 text-[#012471]">
+              Edit Product
+            </h2>
             <form onSubmit={handleUpdateProduct} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Product Name *
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -301,7 +345,9 @@ function ProductList() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Model Number</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Model Number
+                </label>
                 <input
                   type="text"
                   name="modelNumber"
@@ -312,7 +358,9 @@ function ProductList() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Brand
+                  </label>
                   <select
                     name="brand"
                     value={editForm.brand}
@@ -327,7 +375,9 @@ function ProductList() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category
+                  </label>
                   <select
                     name="category"
                     value={editForm.category}
@@ -344,7 +394,9 @@ function ProductList() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Price (₹) *
+                  </label>
                   <input
                     type="number"
                     name="price"
@@ -355,7 +407,9 @@ function ProductList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Quantity *
+                  </label>
                   <input
                     type="number"
                     name="quantity"
@@ -368,7 +422,9 @@ function ProductList() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Resolution</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Resolution
+                  </label>
                   <select
                     name="resolution"
                     value={editForm.resolution}
@@ -383,7 +439,9 @@ function ProductList() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Lens</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lens
+                  </label>
                   <input
                     type="text"
                     name="lens"
@@ -440,9 +498,12 @@ function ProductList() {
       {isDeleteOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-xl shadow-xl p-5 sm:p-6 w-full max-w-sm">
-            <h2 className="text-lg sm:text-xl font-bold mb-3 text-red-600">Delete Product</h2>
+            <h2 className="text-lg sm:text-xl font-bold mb-3 text-red-600">
+              Delete Product
+            </h2>
             <p className="text-sm sm:text-base text-gray-700 mb-6">
-              Are you sure you want to delete this product? This action cannot be undone.
+              Are you sure you want to delete this product? This action cannot
+              be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
