@@ -19,8 +19,6 @@ const addProduct = async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    console.log("➕ Adding product for user:", req.user.id);
-
     const product = await Product.create({
       name,
       modelNumber,
@@ -35,7 +33,6 @@ const addProduct = async (req, res) => {
       createdBy: req.user.id, // ✅ This MUST be here
     });
 
-    console.log("✅ Product added:", product.name);
     res.status(201).json(product);
   } catch (error) {
     console.error("❌ ADD PRODUCT ERROR:", error);
