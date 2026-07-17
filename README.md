@@ -1,7 +1,7 @@
 # 🎥 CCTV Management System
 A full-stack CCTV Management System built using the MERN Stack (MongoDB, Express.js, React, Node.js). The application allows users to browse CCTV products, manage carts, place orders, and provides administrators with complete product management capabilities.
 ## 🚀 Live Demo
-🔗 https://cctv-management-nu.vercel.app
+🔗 (https://cctv-management-jet.vercel.app/login)
 ---
 ## 📸 Screenshots
 > Add screenshots of:
